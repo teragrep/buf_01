@@ -50,9 +50,9 @@ import java.nio.ByteBuffer;
 /**
  * Stub implementation of the {@link BufferContainer}.
  */
-final class BufferContainerStub implements BufferContainer {
+public final class BufferContainerStub implements BufferContainer {
 
-    BufferContainerStub() {
+    public BufferContainerStub() {
 
     }
 

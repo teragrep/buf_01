@@ -45,49 +45,73 @@
  */
 package com.teragrep.buf_01.buffer;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.nio.ByteBuffer;
+import java.util.List;
 
-/**
- * Stub implementation of the {@link BufferLease}
- */
-public final class BufferLeaseStub implements BufferLease {
+public final class BufferLeasePoolTest {
 
-    public BufferLeaseStub() {
+    @Test
+    public void testPool() {
+        BufferLeasePool bufferLeasePool = new BufferLeasePool();
+        List<BufferLease> leases = bufferLeasePool.take(1);
 
-    }
+        Assertions.assertEquals(1, leases.size());
 
-    @Override
-    public long id() {
-        throw new IllegalStateException("BufferLeaseStub does not have an id!");
-    }
+        Assertions.assertEquals(0, bufferLeasePool.estimatedSize()); // none in the pool
 
-    @Override
-    public long refs() {
-        throw new IllegalStateException("BufferLeaseStub does not have refs!");
-    }
+        BufferLease lease = leases.get(0);
 
-    @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferLeaseStub does not have a buffer!");
-    }
+        Assertions.assertFalse(lease.isStub());
 
-    @Override
-    public void addRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow adding refs!");
-    }
+        Assertions.assertFalse(lease.isTerminated()); // initially 1 refs
 
-    @Override
-    public void removeRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow removing refs!");
-    }
+        Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-    @Override
-    public boolean isTerminated() {
-        throw new IllegalStateException("BufferLeaseStub does not have ref count!");
-    }
+        lease.addRef();
 
-    @Override
-    public boolean isStub() {
-        return true;
+        Assertions.assertEquals(2, lease.refs());
+
+        lease.buffer().put((byte) 'x');
+
+        Assertions.assertEquals(1, lease.buffer().position());
+
+        lease.buffer().flip();
+
+        Assertions.assertEquals(0, lease.buffer().position());
+
+        Assertions.assertEquals(1, lease.buffer().limit());
+
+        Assertions.assertEquals((byte) 'x', lease.buffer().get());
+
+        Assertions.assertEquals(1, lease.buffer().position());
+
+        Assertions.assertEquals(2, lease.refs());
+
+        lease.removeRef();
+
+        Assertions.assertFalse(lease.isTerminated()); // initial ref must be still in place
+
+        Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
+
+        ByteBuffer buffer = lease.buffer(); // get a hold of a reference
+
+        lease.removeRef(); // removes initial ref
+
+        Assertions.assertEquals(1, bufferLeasePool.estimatedSize()); // the one offered must be there
+
+        Assertions.assertTrue(lease.isTerminated()); // no refs
+
+        Assertions.assertThrows(IllegalStateException.class, lease::buffer);
+
+        Assertions.assertEquals(buffer.capacity(), buffer.limit());
+
+        Assertions.assertEquals(0, buffer.position());
+
+        bufferLeasePool.close();
+
+        Assertions.assertEquals(0, bufferLeasePool.estimatedSize());
     }
 }
