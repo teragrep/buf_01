@@ -14,6 +14,20 @@
       <url>http://github.com/teragrep/teragrep/blob/main/LICENSE</url>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <name>Mikko Kortelainen</name>
+      <email>1@teragrep.com</email>
+      <organization>Teragrep</organization>
+      <organizationUrl>https://teragrep.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>43</name>
+      <email>43@teragrep.com</email>
+      <organization>Teragrep</organization>
+      <organizationUrl>https://teragrep.com</organizationUrl>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:https://github.com/teragrep/buf_01.git</connection>
     <developerConnection>scm:git:git@github.com:teragrep/buf_01.git</developerConnection>
