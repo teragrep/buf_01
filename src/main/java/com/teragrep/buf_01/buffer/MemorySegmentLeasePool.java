@@ -48,6 +48,7 @@ package com.teragrep.buf_01.buffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -60,20 +61,20 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 /**
- * Non-blocking pool for {@link BufferContainer} objects. All objects in the pool are {@link ByteBuffer#clear()}ed
- * before returning to the pool by {@link BufferLease}.
+ * Non-blocking pool for {@link MemorySegmentContainer} objects. All objects in the pool are {@link ByteBuffer#clear()}ed
+ * before returning to the pool by {@link MemorySegmentLease}.
  */
-public final class BufferLeasePool {
+public final class MemorySegmentLeasePool {
     // TODO create tests
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BufferLeasePool.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemorySegmentLeasePool.class);
 
-    private final Supplier<ByteBuffer> byteBufferSupplier;
+    private final Supplier<MemorySegment> memorySegmentSupplier;
 
-    private final ConcurrentLinkedQueue<BufferContainer> queue;
+    private final ConcurrentLinkedQueue<MemorySegmentContainer> queue;
 
-    private final BufferLease bufferLeaseStub;
-    private final BufferContainer bufferContainerStub;
+    private final MemorySegmentLease memorySegmentLeaseStub;
+    private final MemorySegmentContainer memorySegmentContainerStub;
     private final AtomicBoolean close;
 
     private final int segmentSize;
@@ -82,82 +83,84 @@ public final class BufferLeasePool {
 
     private final Lock lock;
 
-    // TODO check locking pattern, addRef in BufferLease can escape offer's check and cause dirty in pool?
-    public BufferLeasePool() {
+    // TODO check locking pattern, addRef in MemorySegmentLease can escape offer's check and cause dirty in pool?
+    public MemorySegmentLeasePool() {
         this.segmentSize = 4096;
-        this.byteBufferSupplier = () -> ByteBuffer.allocateDirect(segmentSize); // TODO configurable extents
+        this.memorySegmentSupplier = () -> MemorySegment.ofBuffer(ByteBuffer.allocateDirect(segmentSize)); // TODO configurable extents
         this.queue = new ConcurrentLinkedQueue<>();
-        this.bufferLeaseStub = new BufferLeaseStub();
-        this.bufferContainerStub = new BufferContainerStub();
+        this.memorySegmentLeaseStub = new MemorySegmentLeaseStub();
+        this.memorySegmentContainerStub = new MemorySegmentContainerStub();
         this.close = new AtomicBoolean();
         this.bufferId = new AtomicLong();
         this.lock = new ReentrantLock();
     }
 
-    private BufferLease take() {
+    private MemorySegmentLease take() {
         // get or create
-        BufferContainer bufferContainer = queue.poll();
-        BufferLease bufferLease;
-        if (bufferContainer == null) {
+        MemorySegmentContainer memorySegmentContainer = queue.poll();
+        MemorySegmentLease memorySegmentLease;
+        if (memorySegmentContainer == null) {
             // if queue is empty or stub object, create a new BufferContainer and BufferLease.
-            bufferLease = new BufferLeaseImpl(
-                    new BufferContainerImpl(bufferId.incrementAndGet(), byteBufferSupplier.get()),
+            memorySegmentLease = new MemorySegmentLeaseImpl(
+                    new MemorySegmentContainerImpl(bufferId.incrementAndGet(), memorySegmentSupplier.get()),
                     this
             );
         }
         else {
             // otherwise, wrap bufferContainer with phaser decorator (bufferLease)
-            bufferLease = new BufferLeaseImpl(bufferContainer, this);
+            memorySegmentLease = new MemorySegmentLeaseImpl(memorySegmentContainer, this);
         }
 
         if (LOGGER.isDebugEnabled()) {
+            //FIXME: asByteBuffer() always returns pos=0
             LOGGER
                     .debug(
-                            "returning bufferLease id <{}> with refs <{}> at buffer position <{}>", bufferLease.id(),
-                            bufferLease.refs(), bufferLease.buffer().position()
+                            "returning bufferLease id <{}> with refs <{}> at buffer position <{}>", memorySegmentLease.id(),
+                            memorySegmentLease.refs(), memorySegmentLease.memorySegment().asByteBuffer().position()
                     );
         }
 
-        if (bufferLease.buffer().position() != 0) {
-            throw new IllegalStateException("Dirty buffer in pool, terminating!");
-        }
 
-        return bufferLease;
+        /*if (memorySegmentLease.memorySegment().asByteBuffer().position() != 0) {
+            throw new IllegalStateException("Dirty buffer in pool, terminating!");
+        }*/
+
+        return memorySegmentLease;
 
     }
 
     /**
-     * @param size minimum size of the {@link BufferLease}s requested.
-     * @return list of {@link BufferLease}s meeting or exceeding the size requested.
+     * @param size minimum size of the {@link MemorySegmentLease}s requested.
+     * @return list of {@link MemorySegmentLease}s meeting or exceeding the size requested.
      */
-    public List<BufferLease> take(long size) {
+    public List<MemorySegmentLease> take(long size) {
         if (close.get()) {
-            return Collections.singletonList(bufferLeaseStub);
+            return Collections.singletonList(memorySegmentLeaseStub);
         }
 
         LOGGER.debug("requesting take with size <{}>", size);
         long currentSize = 0;
-        List<BufferLease> bufferLeases = new LinkedList<>();
+        List<MemorySegmentLease> memorySegmentLeases = new LinkedList<>();
         while (currentSize < size) {
-            BufferLease bufferLease = take();
-            bufferLeases.add(bufferLease);
-            currentSize = currentSize + bufferLease.buffer().capacity();
+            MemorySegmentLease memorySegmentLease = take();
+            memorySegmentLeases.add(memorySegmentLease);
+            currentSize = currentSize + memorySegmentLease.memorySegment().byteSize();
 
         }
-        return bufferLeases;
+        return memorySegmentLeases;
 
     }
 
     /**
-     * return {@link BufferContainer} into the pool.
+     * return {@link MemorySegmentContainer} into the pool.
      * 
-     * @param bufferContainer {@link BufferContainer} from {@link BufferLease} which has been
+     * @param memorySegmentContainer {@link MemorySegmentContainer} from {@link MemorySegmentLease} which has been
      *                        {@link ByteBuffer#clear()}ed.
      */
-    void internalOffer(BufferContainer bufferContainer) {
+    void internalOffer(MemorySegmentContainer memorySegmentContainer) {
         // Add buffer back to pool if it is not a stub object
-        if (!bufferContainer.isStub()) {
-            queue.add(bufferContainer);
+        if (!memorySegmentContainer.isStub()) {
+            queue.add(memorySegmentContainer);
         }
 
         if (close.get()) {
@@ -180,7 +183,7 @@ public final class BufferLeasePool {
     }
 
     /**
-     * Closes the {@link BufferLeasePool}, deallocating currently residing {@link BufferContainer}s and future ones when
+     * Closes the {@link MemorySegmentLeasePool}, deallocating currently residing {@link MemorySegmentContainer}s and future ones when
      * returned.
      */
     public void close() {
@@ -188,7 +191,7 @@ public final class BufferLeasePool {
         close.set(true);
 
         // close all that are in the pool right now
-        internalOffer(bufferContainerStub);
+        internalOffer(memorySegmentContainerStub);
 
     }
 

@@ -45,43 +45,49 @@
  */
 package com.teragrep.buf_01.buffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 
 /**
- * Decorator for {@link ByteBuffer} with a synchronized access for it.
+ * Stub implementation of the {@link MemorySegmentLease}
  */
-public final class BufferContainerImpl implements BufferContainer {
+public final class MemorySegmentLeaseStub implements MemorySegmentLease {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BufferContainerImpl.class);
-    private final long id;
-    private final ByteBuffer buffer;
+    public MemorySegmentLeaseStub() {
 
-    public BufferContainerImpl(long id, ByteBuffer buffer) {
-        this.id = id;
-        this.buffer = buffer;
     }
 
     @Override
     public long id() {
-        return id;
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have an id!");
     }
 
     @Override
-    public synchronized ByteBuffer buffer() {
-        return buffer;
+    public long refs() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have refs!");
     }
 
     @Override
-    public String toString() {
-        return "BufferContainer{" + "buffer=" + buffer + ", id=" + id + '}';
+    public MemorySegment memorySegment() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have a buffer!");
+    }
+
+    @Override
+    public void addRef() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not allow adding refs!");
+    }
+
+    @Override
+    public void removeRef() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not allow removing refs!");
+    }
+
+    @Override
+    public boolean isTerminated() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have ref count!");
     }
 
     @Override
     public boolean isStub() {
-        LOGGER.debug("id <{}>", id);
-        return false;
+        return true;
     }
 }

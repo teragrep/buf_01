@@ -45,45 +45,29 @@
  */
 package com.teragrep.buf_01.buffer;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 
 /**
- * BufferLease is a decorator for {@link BufferContainer} with reference counter
+ * Stub implementation of the {@link MemorySegmentContainer}.
  */
-public interface BufferLease {
+public final class MemorySegmentContainerStub implements MemorySegmentContainer {
 
-    /**
-     * @return identity of the decorated {@link BufferContainer}.
-     */
-    public abstract long id();
+    public MemorySegmentContainerStub() {
 
-    /**
-     * @return current reference count.
-     */
-    public abstract long refs();
+    }
 
-    /**
-     * @return encapsulated buffer of the {@link BufferContainer}.
-     */
-    public abstract ByteBuffer buffer();
+    @Override
+    public long id() {
+        throw new IllegalStateException("MemorySegmentContainerStub does not have an id!");
+    }
 
-    /**
-     * Add reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void addRef() throws IllegalStateException;
+    @Override
+    public MemorySegment memorySegment() {
+        throw new IllegalStateException("MemorySegmentContainerStub does not allow access to the MemorySegment!");
+    }
 
-    /**
-     * Remove reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void removeRef() throws IllegalStateException;
-
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean isTerminated();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
+    @Override
+    public boolean isStub() {
+        return true;
+    }
 }

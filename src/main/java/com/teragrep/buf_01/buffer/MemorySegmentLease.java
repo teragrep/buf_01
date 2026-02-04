@@ -45,49 +45,45 @@
  */
 package com.teragrep.buf_01.buffer;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 
 /**
- * Stub implementation of the {@link BufferLease}
+ * MemorySegmentLease is a decorator for {@link MemorySegmentContainer} with reference counter
  */
-public final class BufferLeaseStub implements BufferLease {
+public interface MemorySegmentLease {
 
-    public BufferLeaseStub() {
+    /**
+     * @return identity of the decorated {@link MemorySegmentContainer}.
+     */
+    public abstract long id();
 
-    }
+    /**
+     * @return current reference count.
+     */
+    public abstract long refs();
 
-    @Override
-    public long id() {
-        throw new IllegalStateException("BufferLeaseStub does not have an id!");
-    }
+    /**
+     * @return encapsulated MemorySegment of the {@link MemorySegmentContainer}.
+     */
+    public abstract MemorySegment memorySegment();
 
-    @Override
-    public long refs() {
-        throw new IllegalStateException("BufferLeaseStub does not have refs!");
-    }
+    /**
+     * Add reference, throws {@link IllegalStateException} if lease has expired.
+     */
+    public abstract void addRef() throws IllegalStateException;
 
-    @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferLeaseStub does not have a buffer!");
-    }
+    /**
+     * Remove reference, throws {@link IllegalStateException} if lease has expired.
+     */
+    public abstract void removeRef() throws IllegalStateException;
 
-    @Override
-    public void addRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow adding refs!");
-    }
+    /**
+     * @return status of the lease, {@code true} indicates that the lease has expired.
+     */
+    public abstract boolean isTerminated();
 
-    @Override
-    public void removeRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow removing refs!");
-    }
-
-    @Override
-    public boolean isTerminated() {
-        throw new IllegalStateException("BufferLeaseStub does not have ref count!");
-    }
-
-    @Override
-    public boolean isStub() {
-        return true;
-    }
+    /**
+     * @return is this a stub implementation.
+     */
+    public abstract boolean isStub();
 }

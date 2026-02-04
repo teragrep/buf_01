@@ -45,22 +45,22 @@
  */
 package com.teragrep.buf_01.buffer;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 
 /**
- * BufferContainer is a decorator for {@link ByteBuffer} with an id.
+ * MemorySegmentContainer is a decorator for {@link MemorySegment} with an id.
  */
-public interface BufferContainer {
+public interface MemorySegmentContainer {
 
     /**
-     * @return id of the buffer
+     * @return id of the MemorySegment
      */
     public abstract long id();
 
     /**
-     * @return encapsulated {@link ByteBuffer}.
+     * @return encapsulated {@link MemorySegment}.
      */
-    public abstract ByteBuffer buffer();
+    public abstract MemorySegment memorySegment();
 
     /**
      * @return is this a stub implementation.
