@@ -45,9 +45,12 @@
  */
 package com.teragrep.buf_01.buffer;
 
+import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentSupplier;
+import com.teragrep.buf_01.buffer.supply.MemorySegmentSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -69,7 +72,7 @@ public final class MemorySegmentLeasePool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MemorySegmentLeasePool.class);
 
-    private final Supplier<MemorySegment> memorySegmentSupplier;
+    private final MemorySegmentSupplier memorySegmentSupplier;
 
     private final ConcurrentLinkedQueue<MemorySegmentContainer> queue;
 
@@ -86,7 +89,7 @@ public final class MemorySegmentLeasePool {
     // TODO check locking pattern, addRef in MemorySegmentLease can escape offer's check and cause dirty in pool?
     public MemorySegmentLeasePool() {
         this.segmentSize = 4096;
-        this.memorySegmentSupplier = () -> MemorySegment.ofBuffer(ByteBuffer.allocateDirect(segmentSize)); // TODO configurable extents
+        this.memorySegmentSupplier = new ArenaMemorySegmentSupplier(Arena.ofAuto(), segmentSize);
         this.queue = new ConcurrentLinkedQueue<>();
         this.memorySegmentLeaseStub = new MemorySegmentLeaseStub();
         this.memorySegmentContainerStub = new MemorySegmentContainerStub();
@@ -112,21 +115,13 @@ public final class MemorySegmentLeasePool {
         }
 
         if (LOGGER.isDebugEnabled()) {
-            //FIXME: asByteBuffer() always returns pos=0
             LOGGER
                     .debug(
-                            "returning bufferLease id <{}> with refs <{}> at buffer position <{}>", memorySegmentLease.id(),
-                            memorySegmentLease.refs(), memorySegmentLease.memorySegment().asByteBuffer().position()
+                            "returning bufferLease id <{}> with refs <{}>", memorySegmentLease.id(), memorySegmentLease.refs()
                     );
         }
 
-
-        /*if (memorySegmentLease.memorySegment().asByteBuffer().position() != 0) {
-            throw new IllegalStateException("Dirty buffer in pool, terminating!");
-        }*/
-
         return memorySegmentLease;
-
     }
 
     /**
@@ -192,6 +187,9 @@ public final class MemorySegmentLeasePool {
 
         // close all that are in the pool right now
         internalOffer(memorySegmentContainerStub);
+
+        // close supplier
+        memorySegmentSupplier.close();
 
     }
 

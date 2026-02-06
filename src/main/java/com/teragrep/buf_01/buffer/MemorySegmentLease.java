@@ -86,4 +86,14 @@ public interface MemorySegmentLease {
      * @return is this a stub implementation.
      */
     public abstract boolean isStub();
+
+    /**
+     * Provides a slice from the offset to the end of the segment.
+     * Registered as a sub lease.
+     * @param committedOffset start offset
+     * @return slice of the MemorySegmentLease, registered as a sublease.
+     */
+    public abstract MemorySegmentLease sliced(long committedOffset);
+
+    public abstract boolean isParentLease();
 }

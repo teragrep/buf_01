@@ -47,6 +47,8 @@ package com.teragrep.buf_01.buffer;
 
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Phaser;
 
 /**
@@ -59,13 +61,40 @@ public final class MemorySegmentLeaseImpl implements MemorySegmentLease {
     private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
     private final MemorySegmentLeasePool memorySegmentLeasePool;
+    private final List<MemorySegmentLease> subLeases;
+    private final MemorySegmentLease parentLease;
 
-    public MemorySegmentLeaseImpl(MemorySegmentContainer bc, MemorySegmentLeasePool memorySegmentLeasePool) {
+    public MemorySegmentLeaseImpl(MemorySegmentContainer bc, MemorySegmentLeasePool memorySegmentLeasePool, MemorySegmentLease parentLease) {
         this.memorySegmentContainer = bc;
         this.memorySegmentLeasePool = memorySegmentLeasePool;
 
         // initial registered parties set to 1
         this.phaser = new ClearingPhaser(1);
+        this.subLeases = new ArrayList<>();
+        this.parentLease = parentLease;
+    }
+
+    public MemorySegmentLeaseImpl(MemorySegmentContainer bc, MemorySegmentLeasePool memorySegmentLeasePool) {
+        this(bc, memorySegmentLeasePool, new MemorySegmentLeaseStub());
+    }
+
+    @Override
+    public MemorySegmentLease sliced(final long committedOffset) {
+        final MemorySegmentLease newSubLease =  new MemorySegmentLeaseImpl(new MemorySegmentContainerImpl(
+                memorySegmentContainer.id(),
+                memorySegmentContainer.memorySegment().asSlice(committedOffset)
+        ), memorySegmentLeasePool, this);
+
+        subLeases.add(newSubLease);
+
+        addRef();
+
+        return newSubLease;
+    }
+
+    @Override
+    public boolean isParentLease() {
+        return parentLease.isStub();
     }
 
     @Override
@@ -101,6 +130,10 @@ public final class MemorySegmentLeaseImpl implements MemorySegmentLease {
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot remove reference, MemorySegmentLease phaser was already terminated!");
         }
+
+        if (phaser.getRegisteredParties() == 0 && !parentLease.isStub()) {
+            parentLease.removeRef();
+        }
     }
 
     @Override
@@ -118,19 +151,22 @@ public final class MemorySegmentLeaseImpl implements MemorySegmentLease {
      */
     private class ClearingPhaser extends Phaser {
 
-        public ClearingPhaser(int i) {
-            super(i);
+        public ClearingPhaser(int initialParties) {
+            super(initialParties);
         }
 
         @Override
         protected boolean onAdvance(int phase, int registeredParties) {
-            boolean rv = false;
+            final boolean shouldTerminate;
             if (registeredParties == 0) {
-                memorySegment().fill((byte)0); //TODO: was byteBuffer.clear()
+                memorySegment().fill((byte) 0);
                 memorySegmentLeasePool.internalOffer(memorySegmentContainer);
-                rv = true;
+                shouldTerminate = true;
+            } else {
+                shouldTerminate = false;
             }
-            return rv;
+
+            return shouldTerminate;
         }
     }
 

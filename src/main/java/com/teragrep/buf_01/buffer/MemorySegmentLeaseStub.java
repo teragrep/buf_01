@@ -90,4 +90,14 @@ public final class MemorySegmentLeaseStub implements MemorySegmentLease {
     public boolean isStub() {
         return true;
     }
+
+    @Override
+    public MemorySegmentLease sliced(final long committedOffset) {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not allow slicing!");
+    }
+
+    @Override
+    public boolean isParentLease() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not implement isParentLease()!");
+    }
 }
