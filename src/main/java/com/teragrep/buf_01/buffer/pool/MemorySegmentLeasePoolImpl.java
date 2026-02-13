@@ -141,7 +141,7 @@ public final class MemorySegmentLeasePoolImpl implements CountablePool<MemorySeg
      *                               {@link ByteBuffer#clear()}ed.
      */
     @Override
-    public void internalOffer(MemorySegmentLease memorySegmentContainer) {
+    public void offer(MemorySegmentLease memorySegmentContainer) {
         // Add buffer back to pool if it is not a stub object
         if (!memorySegmentContainer.isStub()) {
             queue.add(memorySegmentContainer);
@@ -176,7 +176,7 @@ public final class MemorySegmentLeasePoolImpl implements CountablePool<MemorySeg
         close.set(true);
 
         // close all that are in the pool right now
-        internalOffer(memorySegmentLeaseStub);
+        offer(memorySegmentLeaseStub);
 
         // close supplier
         memorySegmentLeaseSupplier.close();

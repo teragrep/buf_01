@@ -55,5 +55,5 @@ public interface CountablePool<T> {
 
     int estimatedSize();
 
-    void internalOffer(T countable);
+    void offer(T countable);
 }

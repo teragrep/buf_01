@@ -72,16 +72,6 @@ public final class MemorySegmentLeaseStub implements MemorySegmentLease {
     }
 
     @Override
-    public void addRef() {
-        throw new IllegalStateException("MemorySegmentLeaseStub does not allow adding refs!");
-    }
-
-    @Override
-    public void removeRef() {
-        throw new IllegalStateException("MemorySegmentLeaseStub does not allow removing refs!");
-    }
-
-    @Override
     public boolean isTerminated() {
         throw new IllegalStateException("MemorySegmentLeaseStub does not have ref count!");
     }
@@ -97,7 +87,7 @@ public final class MemorySegmentLeaseStub implements MemorySegmentLease {
     }
 
     @Override
-    public boolean isParentLease() {
-        throw new IllegalStateException("MemorySegmentLeaseStub does not implement isParentLease()!");
+    public void close() {
+        throw new IllegalStateException("MemorySegmentLeaseStub cannot be closed!");
     }
 }

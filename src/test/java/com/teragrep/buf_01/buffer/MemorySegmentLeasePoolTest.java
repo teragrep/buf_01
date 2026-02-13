@@ -54,18 +54,18 @@ import org.junit.jupiter.api.Test;
 import java.lang.foreign.ValueLayout;
 import java.util.List;
 
-public final class MemorySegmentLeasePoolTest {
+final class MemorySegmentLeasePoolTest {
 
     @Test
-    public void testPool() {
-        CountablePool<MemorySegmentLease> memorySegmentLeasePool = new MemorySegmentLeasePoolImpl();
-        List<MemorySegmentLease> leases = memorySegmentLeasePool.take(1);
+    void testPool() {
+        final CountablePool<MemorySegmentLease> memorySegmentLeasePool = new MemorySegmentLeasePoolImpl();
+        final List<MemorySegmentLease> leases = memorySegmentLeasePool.take(5);
 
         Assertions.assertEquals(1, leases.size());
 
         Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // none in the pool
 
-        MemorySegmentLease lease = leases.getFirst();
+        final MemorySegmentLease lease = leases.getFirst();
 
         Assertions.assertFalse(lease.isStub());
 
@@ -73,7 +73,7 @@ public final class MemorySegmentLeasePoolTest {
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-        lease.addRef();
+        final MemorySegmentLease slice = lease.sliced(2);
 
         Assertions.assertEquals(2, lease.refs());
 
@@ -83,17 +83,17 @@ public final class MemorySegmentLeasePoolTest {
 
         Assertions.assertEquals(2, lease.refs());
 
-        lease.removeRef();
+        Assertions.assertDoesNotThrow(slice::close);
 
         Assertions.assertFalse(lease.isTerminated()); // initial ref must be still in place
 
         Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
 
-        lease.removeRef(); // removes initial ref
+        Assertions.assertDoesNotThrow(lease::close); // removes initial ref
 
         Assertions.assertEquals(1, memorySegmentLeasePool.estimatedSize()); // the one offered must be there
 
-        Assertions.assertTrue(lease.isTerminated()); // no refs
+        Assertions.assertFalse(lease.isTerminated()); // main lease is not terminated, allows reuse
 
         Assertions.assertThrows(IllegalStateException.class, lease::memorySegment);
 

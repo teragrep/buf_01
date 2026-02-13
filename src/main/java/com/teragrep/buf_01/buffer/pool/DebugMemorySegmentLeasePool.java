@@ -152,7 +152,7 @@ public final class DebugMemorySegmentLeasePool implements CountablePool<MemorySe
      *                           {@link ByteBuffer#clear()}ed.
      */
     @Override
-    public void internalOffer(MemorySegmentLease memorySegmentLease) {
+    public void offer(MemorySegmentLease memorySegmentLease) {
         // debug pool, instead of returning to pool arena is closed and memorySegment is discarded.
         if (!memorySegmentLease.isStub()) {
             MemorySegmentLeaseSupplier supplier = suppliers.get(memorySegmentLease.id());
@@ -187,7 +187,7 @@ public final class DebugMemorySegmentLeasePool implements CountablePool<MemorySe
         close.set(true);
 
         // close all that are in the pool right now
-        internalOffer(memorySegmentLeaseStub);
+        offer(memorySegmentLeaseStub);
     }
 
     /**

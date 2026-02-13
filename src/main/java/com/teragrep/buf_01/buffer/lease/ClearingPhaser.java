@@ -45,45 +45,50 @@
  */
 package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
+import com.teragrep.buf_01.buffer.pool.CountablePool;
 
-import java.lang.foreign.MemorySegment;
+import java.util.concurrent.Phaser;
 
 /**
- * MemorySegmentLease is a decorator for {@link MemorySegmentContainer} with reference counter
+ * Phaser that clears the MemorySegment on termination (registeredParties=0), if the lease is not the parent lease.
+ * Otherwise, the lease is not fully terminated so it can be reused.
  */
-public interface MemorySegmentLease extends AutoCloseable {
+class ClearingPhaser extends Phaser {
 
-    /**
-     * @return identity of the decorated {@link MemorySegmentContainer}.
-     */
-    public abstract long id();
+    private final MemorySegmentLease lease;
+    private final CountablePool<MemorySegmentLease> pool;
 
-    /**
-     * @return current reference count.
-     */
-    public abstract long refs();
+    ClearingPhaser(int initialParties, MemorySegmentLease lease, CountablePool<MemorySegmentLease> pool) {
+        super(initialParties);
+        this.lease = lease;
+        this.pool = pool;
+    }
 
-    /**
-     * @return encapsulated MemorySegment of the {@link MemorySegmentContainer}.
-     */
-    public abstract MemorySegment memorySegment();
+    ClearingPhaser(
+            Phaser parent,
+            int initialParties,
+            MemorySegmentLease lease,
+            CountablePool<MemorySegmentLease> pool
+    ) {
+        super(parent, initialParties);
+        this.lease = lease;
+        this.pool = pool;
+    }
 
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean isTerminated();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
-
-    /**
-     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
-     * 
-     * @param committedOffset start offset
-     * @return slice of the MemorySegmentLease, registered as a sublease.
-     */
-    public abstract MemorySegmentLease sliced(long committedOffset);
+    @Override
+    protected boolean onAdvance(int phase, int registeredParties) {
+        final boolean shouldTerminate;
+        if (this.getParent() == null && registeredParties == 0) {
+            //   lease.memorySegment().fill((byte) 0);
+            //   pool.offer(lease);
+            shouldTerminate = false;
+        }
+        else if (registeredParties == 0) {
+            shouldTerminate = true;
+        }
+        else {
+            shouldTerminate = false;
+        }
+        return shouldTerminate;
+    }
 }
