@@ -79,8 +79,6 @@ class ClearingPhaser extends Phaser {
     protected boolean onAdvance(int phase, int registeredParties) {
         final boolean shouldTerminate;
         if (this.getParent() == null && registeredParties == 0) {
-            //   lease.memorySegment().fill((byte) 0);
-            //   pool.offer(lease);
             shouldTerminate = false;
         }
         else if (registeredParties == 0) {

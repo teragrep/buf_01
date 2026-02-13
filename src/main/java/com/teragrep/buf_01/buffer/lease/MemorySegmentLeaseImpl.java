@@ -116,22 +116,6 @@ public final class MemorySegmentLeaseImpl implements MemorySegmentLease {
         return memorySegmentContainer.memorySegment();
     }
 
-    /*  @Override
-    public void addRef() {
-        if (phaser.register() < 0) {
-            throw new IllegalStateException("Cannot add reference, MemorySegmentLease phaser was already terminated!");
-        }
-    }
-    
-    @Override
-    public void removeRef() {
-        if (phaser.arriveAndDeregister() < 0) {
-            throw new IllegalStateException(
-                    "Cannot remove reference, MemorySegmentLease phaser was already terminated!"
-            );
-        }
-    } */
-
     @Override
     public boolean isTerminated() {
         return phaser.isTerminated();
