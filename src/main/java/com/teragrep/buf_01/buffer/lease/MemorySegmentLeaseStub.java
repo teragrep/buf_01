@@ -48,9 +48,9 @@ package com.teragrep.buf_01.buffer.lease;
 import java.lang.foreign.MemorySegment;
 
 /**
- * Stub implementation of the {@link MemorySegmentLease}
+ * Stub implementation of the {@link Lease}
  */
-public final class MemorySegmentLeaseStub implements MemorySegmentLease {
+public final class MemorySegmentLeaseStub implements Lease<MemorySegment> {
 
     public MemorySegmentLeaseStub() {
 
@@ -67,7 +67,7 @@ public final class MemorySegmentLeaseStub implements MemorySegmentLease {
     }
 
     @Override
-    public MemorySegment memorySegment() {
+    public MemorySegment leasedObject() {
         throw new IllegalStateException("MemorySegmentLeaseStub does not have a buffer!");
     }
 
@@ -82,7 +82,7 @@ public final class MemorySegmentLeaseStub implements MemorySegmentLease {
     }
 
     @Override
-    public MemorySegmentLease sliced(final long committedOffset) {
+    public Lease<MemorySegment> sliced(final long committedOffset) {
         throw new IllegalStateException("MemorySegmentLeaseStub does not allow slicing!");
     }
 

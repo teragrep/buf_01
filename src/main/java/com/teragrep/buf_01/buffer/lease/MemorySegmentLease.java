@@ -46,44 +46,95 @@
 package com.teragrep.buf_01.buffer.lease;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.pool.CountablePool;
+import com.teragrep.buf_01.buffer.pool.MemorySegmentLeasePoolImpl;
 
 import java.lang.foreign.MemorySegment;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Phaser;
 
 /**
- * MemorySegmentLease is a decorator for {@link MemorySegmentContainer} with reference counter
+ * Decorator for {@link MemorySegmentContainer} that automatically clears (frees) the encapsulated {@link ByteBuffer}
+ * and returns the {@link MemorySegmentContainer} to {@link MemorySegmentLeasePoolImpl} when reference count hits zero.
+ * Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking way.
  */
-public interface MemorySegmentLease extends AutoCloseable {
+public final class MemorySegmentLease implements Lease<MemorySegment> {
 
-    /**
-     * @return identity of the decorated {@link MemorySegmentContainer}.
-     */
-    public abstract long id();
+    private final MemorySegmentContainer memorySegmentContainer;
+    private final Phaser phaser;
+    private final CountablePool<Lease<MemorySegment>> memorySegmentLeasePool;
 
-    /**
-     * @return current reference count.
-     */
-    public abstract long refs();
+    public MemorySegmentLease(
+            MemorySegmentContainer bc,
+            CountablePool<Lease<MemorySegment>> memorySegmentLeasePool,
+            Phaser parent
+    ) {
+        this.memorySegmentContainer = bc;
+        this.memorySegmentLeasePool = memorySegmentLeasePool;
+        // initial registered parties set to 1
+        this.phaser = new ClearingPhaser<>(parent, 1, this, memorySegmentLeasePool);
+    }
 
-    /**
-     * @return encapsulated MemorySegment of the {@link MemorySegmentContainer}.
-     */
-    public abstract MemorySegment memorySegment();
+    public MemorySegmentLease(MemorySegmentContainer bc, CountablePool<Lease<MemorySegment>> memorySegmentLeasePool) {
+        this.memorySegmentContainer = bc;
+        this.memorySegmentLeasePool = memorySegmentLeasePool;
+        // initial registered parties set to 1
+        this.phaser = new ClearingPhaser<>(1, this, memorySegmentLeasePool);
+    }
 
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean isTerminated();
+    @Override
+    public Lease<MemorySegment> sliced(final long committedOffset) {
+        return new MemorySegmentLease(
+                new MemorySegmentContainerImpl(
+                        memorySegmentContainer.id(),
+                        memorySegmentContainer.memorySegment().asSlice(committedOffset)
+                ),
+                memorySegmentLeasePool,
+                phaser
+        );
+    }
 
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
+    @Override
+    public long id() {
+        return memorySegmentContainer.id();
+    }
 
-    /**
-     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
-     * 
-     * @param committedOffset start offset
-     * @return slice of the MemorySegmentLease, registered as a sublease.
-     */
-    public abstract MemorySegmentLease sliced(long committedOffset);
+    @Override
+    public long refs() {
+        // initial number of registered parties is 1
+        return phaser.getRegisteredParties();
+    }
+
+    @Override
+    public MemorySegment leasedObject() {
+        if (phaser.getRegisteredParties() == 0) {
+            throw new IllegalStateException(
+                    "Cannot return wrapped MemorySegment, MemorySegmentLease phaser was already terminated!"
+            );
+        }
+        return memorySegmentContainer.memorySegment();
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return phaser.isTerminated();
+    }
+
+    @Override
+    public boolean isStub() {
+        return memorySegmentContainer.isStub();
+    }
+
+    @Override
+    public void close() {
+        if (phaser.getParent() == null && phaser.getRegisteredParties() == 1) {
+            leasedObject().fill((byte) 0);
+            memorySegmentLeasePool.offer(this);
+        }
+
+        if (phaser.arriveAndDeregister() < 0) {
+            throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
+        }
+    }
 }

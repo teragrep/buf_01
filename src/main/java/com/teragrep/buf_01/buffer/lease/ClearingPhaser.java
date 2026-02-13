@@ -53,23 +53,18 @@ import java.util.concurrent.Phaser;
  * Phaser that clears the MemorySegment on termination (registeredParties=0), if the lease is not the parent lease.
  * Otherwise, the lease is not fully terminated so it can be reused.
  */
-class ClearingPhaser extends Phaser {
+class ClearingPhaser<T> extends Phaser {
 
-    private final MemorySegmentLease lease;
-    private final CountablePool<MemorySegmentLease> pool;
+    private final Lease<T> lease;
+    private final CountablePool<Lease<T>> pool;
 
-    ClearingPhaser(int initialParties, MemorySegmentLease lease, CountablePool<MemorySegmentLease> pool) {
+    ClearingPhaser(int initialParties, Lease<T> lease, CountablePool<Lease<T>> pool) {
         super(initialParties);
         this.lease = lease;
         this.pool = pool;
     }
 
-    ClearingPhaser(
-            Phaser parent,
-            int initialParties,
-            MemorySegmentLease lease,
-            CountablePool<MemorySegmentLease> pool
-    ) {
+    ClearingPhaser(Phaser parent, int initialParties, Lease<T> lease, CountablePool<Lease<T>> pool) {
         super(parent, initialParties);
         this.lease = lease;
         this.pool = pool;

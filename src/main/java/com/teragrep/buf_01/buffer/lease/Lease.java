@@ -43,50 +43,45 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.supply;
+package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
-import com.teragrep.buf_01.buffer.lease.Lease;
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.pool.CountablePool;
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 
-import java.lang.foreign.MemorySegment;
-import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicLong;
+/**
+ * MemorySegmentLease is a decorator for {@link MemorySegmentContainer} with reference counter
+ */
+public interface Lease<T> extends AutoCloseable {
 
-public final class DirectByteBufferMemorySegmentLeaseSupplier implements MemorySegmentLeaseSupplier {
+    /**
+     * @return identity of the decorated {@link MemorySegmentContainer}.
+     */
+    public abstract long id();
 
-    private final int count;
-    private final AtomicLong bufferId;
-    private final CountablePool<Lease<MemorySegment>> pool;
+    /**
+     * @return current reference count.
+     */
+    public abstract long refs();
 
-    public DirectByteBufferMemorySegmentLeaseSupplier(final int count, final CountablePool<Lease<MemorySegment>> pool) {
-        this(count, new AtomicLong(0L), pool);
-    }
+    /**
+     * @return encapsulated MemorySegment of the {@link MemorySegmentContainer}.
+     */
+    public abstract T leasedObject();
 
-    public DirectByteBufferMemorySegmentLeaseSupplier(
-            final int count,
-            final AtomicLong bufferId,
-            final CountablePool<Lease<MemorySegment>> pool
-    ) {
-        this.count = count;
-        this.bufferId = bufferId;
-        this.pool = pool;
-    }
+    /**
+     * @return status of the lease, {@code true} indicates that the lease has expired.
+     */
+    public abstract boolean isTerminated();
 
-    @Override
-    public Lease<MemorySegment> get() {
-        return new MemorySegmentLease(
-                new MemorySegmentContainerImpl(
-                        bufferId.incrementAndGet(),
-                        MemorySegment.ofBuffer(ByteBuffer.allocateDirect(count))
-                ),
-                pool
-        );
-    }
+    /**
+     * @return is this a stub implementation.
+     */
+    public abstract boolean isStub();
 
-    @Override
-    public void close() {
-        // no-op
-    }
+    /**
+     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
+     * 
+     * @param committedOffset start offset
+     * @return slice of the MemorySegmentLease, registered as a sublease.
+     */
+    public abstract Lease<T> sliced(long committedOffset);
 }

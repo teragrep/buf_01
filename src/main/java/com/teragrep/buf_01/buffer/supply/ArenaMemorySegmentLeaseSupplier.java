@@ -46,11 +46,12 @@
 package com.teragrep.buf_01.buffer.supply;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseImpl;
 import com.teragrep.buf_01.buffer.pool.CountablePool;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -59,12 +60,12 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
     private final Arena arena;
     private final long count;
     private final AtomicLong bufferId;
-    private final CountablePool<MemorySegmentLease> pool;
+    private final CountablePool<Lease<MemorySegment>> pool;
 
     public ArenaMemorySegmentLeaseSupplier(
             final Arena arena,
             final long count,
-            final CountablePool<MemorySegmentLease> pool
+            final CountablePool<Lease<MemorySegment>> pool
     ) {
         this(arena, count, new AtomicLong(0L), pool);
     }
@@ -73,7 +74,7 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
             final Arena arena,
             final long count,
             final AtomicLong bufferId,
-            final CountablePool<MemorySegmentLease> pool
+            final CountablePool<Lease<MemorySegment>> pool
     ) {
         this.arena = arena;
         this.count = count;
@@ -82,8 +83,8 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
     }
 
     @Override
-    public MemorySegmentLease get() {
-        return new MemorySegmentLeaseImpl(
+    public Lease<MemorySegment> get() {
+        return new MemorySegmentLease(
                 new MemorySegmentContainerImpl(bufferId.incrementAndGet(), arena.allocate(ValueLayout.JAVA_BYTE, count)), pool
         );
     }

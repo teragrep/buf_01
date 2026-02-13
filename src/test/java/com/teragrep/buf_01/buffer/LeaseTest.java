@@ -46,8 +46,8 @@
 package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseImpl;
 import com.teragrep.buf_01.buffer.pool.MemorySegmentLeasePoolImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -55,11 +55,11 @@ import org.junit.jupiter.api.Test;
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 
-final class MemorySegmentLeaseTest {
+final class LeaseTest {
 
     @Test
     void testOneLease() {
-        final MemorySegmentLease lease = new MemorySegmentLeaseImpl(
+        final Lease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new MemorySegmentLeasePoolImpl()
         );
@@ -74,12 +74,12 @@ final class MemorySegmentLeaseTest {
         // should be 0
         Assertions.assertEquals(0L, lease.refs());
         // FIXME: Assertions.assertTrue(lease.isTerminated());
-        Assertions.assertThrows(IllegalStateException.class, lease::memorySegment);
+        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
     }
 
     @Test
     void testSubLeaseCreateAndRemove() {
-        final MemorySegmentLease lease = new MemorySegmentLeaseImpl(
+        final Lease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new MemorySegmentLeasePoolImpl()
         );
@@ -89,7 +89,7 @@ final class MemorySegmentLeaseTest {
         Assertions.assertFalse(lease.isTerminated());
 
         // slice
-        final MemorySegmentLease slice = lease.sliced(512);
+        final Lease<MemorySegment> slice = lease.sliced(512);
 
         Assertions.assertEquals(2L, lease.refs());
 
@@ -103,7 +103,7 @@ final class MemorySegmentLeaseTest {
 
     @Test
     void testSubLeaseCreateAndRemoveParentRefs() {
-        final MemorySegmentLease lease = new MemorySegmentLeaseImpl(
+        final Lease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new MemorySegmentLeasePoolImpl()
         );
@@ -113,7 +113,7 @@ final class MemorySegmentLeaseTest {
         Assertions.assertFalse(lease.isTerminated());
 
         // slice
-        final MemorySegmentLease slice = lease.sliced(512);
+        final Lease<MemorySegment> slice = lease.sliced(512);
         Assertions.assertEquals(1L, slice.refs());
         Assertions.assertEquals(2L, lease.refs());
 

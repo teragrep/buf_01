@@ -45,27 +45,28 @@
  */
 package com.teragrep.buf_01.buffer;
 
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.pool.DebugMemorySegmentLeasePool;
+import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.pool.CountablePool;
+import com.teragrep.buf_01.buffer.pool.MemorySegmentLeasePoolImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.List;
 
-final class DebugMemorySegmentLeasePoolTest {
+final class LeasePoolTest {
 
     @Test
     void testPool() {
-        final CountablePool<MemorySegmentLease> memorySegmentLeasePool = new DebugMemorySegmentLeasePool();
-        final List<MemorySegmentLease> leases = memorySegmentLeasePool.take(5);
+        final CountablePool<Lease<MemorySegment>> memorySegmentLeasePool = new MemorySegmentLeasePoolImpl();
+        final List<Lease<MemorySegment>> leases = memorySegmentLeasePool.take(5);
 
         Assertions.assertEquals(1, leases.size());
 
         Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // none in the pool
 
-        final MemorySegmentLease lease = leases.getFirst();
+        final Lease<MemorySegment> lease = leases.getFirst();
 
         Assertions.assertFalse(lease.isStub());
 
@@ -73,13 +74,13 @@ final class DebugMemorySegmentLeasePoolTest {
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-        final MemorySegmentLease slice = lease.sliced(2);
+        final Lease<MemorySegment> slice = lease.sliced(2);
 
         Assertions.assertEquals(2, lease.refs());
 
-        lease.memorySegment().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
+        lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
 
-        Assertions.assertEquals((byte) 'x', lease.memorySegment().get(ValueLayout.JAVA_BYTE, 0));
+        Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
 
         Assertions.assertEquals(2, lease.refs());
 
@@ -91,11 +92,11 @@ final class DebugMemorySegmentLeasePoolTest {
 
         Assertions.assertDoesNotThrow(lease::close); // removes initial ref
 
-        Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // debug pool does not contain any
+        Assertions.assertEquals(1, memorySegmentLeasePool.estimatedSize()); // the one offered must be there
 
-        Assertions.assertFalse(lease.isTerminated()); // no refs, but should be still active for reuse
+        Assertions.assertFalse(lease.isTerminated()); // main lease is not terminated, allows reuse
 
-        Assertions.assertThrows(IllegalStateException.class, lease::memorySegment);
+        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
 
         memorySegmentLeasePool.close();
 

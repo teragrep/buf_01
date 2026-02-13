@@ -45,14 +45,15 @@
  */
 package com.teragrep.buf_01.buffer.supply;
 
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
+import com.teragrep.buf_01.buffer.lease.Lease;
 
+import java.lang.foreign.MemorySegment;
 import java.util.function.Supplier;
 
-public interface MemorySegmentLeaseSupplier extends Supplier<MemorySegmentLease>, AutoCloseable {
+public interface MemorySegmentLeaseSupplier extends Supplier<Lease<MemorySegment>>, AutoCloseable {
 
     @Override
-    MemorySegmentLease get();
+    Lease<MemorySegment> get();
 
     void close();
 }
