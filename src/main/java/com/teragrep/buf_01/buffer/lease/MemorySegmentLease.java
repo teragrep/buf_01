@@ -65,7 +65,7 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
     public MemorySegmentLease(MemorySegmentContainer bc) {
         this.memorySegmentContainer = bc;
         // initial registered parties set to 1
-        this.phaser = new ClearingPhaser<>(1, this);
+        this.phaser = new NonTerminatingPhaser<>(1);
     }
 
     @Override
@@ -101,8 +101,8 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
     }
 
     @Override
-    public boolean isTerminated() {
-        return phaser.isTerminated();
+    public boolean hasZeroRefs() {
+        return phaser.getRegisteredParties() == 0;
     }
 
     @Override

@@ -58,44 +58,48 @@ final class LeaseTest {
 
     @Test
     void testOneLease() {
-        final Lease<MemorySegment> lease = new MemorySegmentLease(
+        final Lease<MemorySegment> rootLease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
         );
 
         // refs starts at 1
-        Assertions.assertEquals(1L, lease.refs());
-        Assertions.assertFalse(lease.isTerminated());
+        Assertions.assertEquals(1L, rootLease.refs());
+        Assertions.assertFalse(rootLease.hasZeroRefs());
 
         // remove ref
-        Assertions.assertDoesNotThrow(lease::close);
+        Assertions.assertDoesNotThrow(rootLease::close);
 
         // should be 0
-        Assertions.assertEquals(0L, lease.refs());
-        // FIXME: Assertions.assertTrue(lease.isTerminated());
-        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
+        Assertions.assertEquals(0L, rootLease.refs());
+
+        // root lease is in terminated state, since refs=0
+        Assertions.assertTrue(rootLease.hasZeroRefs());
+
+        // cannot access leasedObject when refs=0
+        Assertions.assertThrows(IllegalStateException.class, rootLease::leasedObject);
     }
 
     @Test
     void testSubLeaseCreateAndRemove() {
-        final Lease<MemorySegment> lease = new MemorySegmentLease(
+        final Lease<MemorySegment> rootLease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
         );
 
         // refs starts at 1
-        Assertions.assertEquals(1L, lease.refs());
-        Assertions.assertFalse(lease.isTerminated());
+        Assertions.assertEquals(1L, rootLease.refs());
+        Assertions.assertFalse(rootLease.hasZeroRefs());
 
         // slice
-        final Lease<MemorySegment> slice = lease.sliced(512);
+        final Lease<MemorySegment> slice = rootLease.sliced(512);
 
-        Assertions.assertEquals(2L, lease.refs());
+        Assertions.assertEquals(2L, rootLease.refs());
 
         Assertions.assertDoesNotThrow(slice::close);
         Assertions.assertEquals(0L, slice.refs());
-        //FIXME: Assertions.assertTrue(slice.isTerminated());
+        Assertions.assertTrue(slice.hasZeroRefs());
 
-        Assertions.assertEquals(1L, lease.refs());
-        Assertions.assertFalse(lease.isTerminated());
+        Assertions.assertEquals(1L, rootLease.refs());
+        Assertions.assertFalse(rootLease.hasZeroRefs());
     }
 
     @Test
@@ -106,7 +110,7 @@ final class LeaseTest {
 
         // refs starts at 1
         Assertions.assertEquals(1L, lease.refs());
-        Assertions.assertFalse(lease.isTerminated());
+        Assertions.assertFalse(lease.hasZeroRefs());
 
         // slice
         final Lease<MemorySegment> slice = lease.sliced(512);
@@ -118,10 +122,12 @@ final class LeaseTest {
             lease.close();
         });
 
-        // Parent lease should not be terminated even with registeredParties = 0
-        Assertions.assertFalse(lease.isTerminated());
+        // Parent lease terminated at close with zero refs
+        Assertions.assertTrue(lease.hasZeroRefs());
         Assertions.assertEquals(0, lease.refs());
-        //FIXME: Assertions.assertTrue(slice.isTerminated());
+
+        // Slice is also terminated, since refs=0
+        Assertions.assertTrue(slice.hasZeroRefs());
         Assertions.assertEquals(0, slice.refs());
     }
 }

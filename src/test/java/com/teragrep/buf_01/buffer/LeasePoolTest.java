@@ -75,7 +75,7 @@ final class LeasePoolTest {
 
         Assertions.assertFalse(lease.isStub());
 
-        Assertions.assertFalse(lease.isTerminated()); // initially 1 refs
+        Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
@@ -91,23 +91,17 @@ final class LeasePoolTest {
 
         Assertions.assertDoesNotThrow(slice::close);
 
-        Assertions.assertFalse(lease.isTerminated()); // initial ref must be still in place
+        Assertions.assertFalse(lease.hasZeroRefs()); // initial ref must be still in place
 
         Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
 
-        //Assertions.assertDoesNotThrow(lease::close); // removes initial ref
-
-       // Assertions.assertEquals(1, memorySegmentLeasePool.estimatedSize()); // the one offered must be there
-
-        Assertions.assertFalse(lease.isTerminated()); // main lease is not terminated, allows reuse
+        Assertions.assertFalse(lease.hasZeroRefs()); // main lease is not terminated, allows reuse
 
         memorySegmentLeasePool.offer(lease);
 
         memorySegmentLeasePool.close();
 
         Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
-
-       // Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize());
 
     }
 }

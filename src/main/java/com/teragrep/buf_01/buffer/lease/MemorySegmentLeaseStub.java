@@ -72,7 +72,7 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
     }
 
     @Override
-    public boolean isTerminated() {
+    public boolean hasZeroRefs() {
         throw new IllegalStateException("MemorySegmentLeaseStub does not have ref count!");
     }
 

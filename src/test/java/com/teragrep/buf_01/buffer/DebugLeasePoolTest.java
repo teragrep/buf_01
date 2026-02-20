@@ -66,13 +66,11 @@ final class DebugLeasePoolTest {
 
         Assertions.assertEquals(1, leases.size());
 
-       // Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // none in the pool
-
         final Lease<MemorySegment> lease = leases.getFirst();
 
         Assertions.assertFalse(lease.isStub());
 
-        Assertions.assertFalse(lease.isTerminated()); // initially 1 refs
+        Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
@@ -88,21 +86,16 @@ final class DebugLeasePoolTest {
 
         Assertions.assertDoesNotThrow(slice::close);
 
-        Assertions.assertFalse(lease.isTerminated()); // initial ref must be still in place
+        Assertions.assertFalse(lease.hasZeroRefs()); // initial ref must be still in place
 
         Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
 
         Assertions.assertDoesNotThrow(lease::close); // removes initial ref
 
-       // Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // debug pool does not contain any
-
-        Assertions.assertFalse(lease.isTerminated()); // no refs, but should be still active for reuse
+        Assertions.assertTrue(lease.hasZeroRefs()); // no refs, so isTerminated=true
 
         memorySegmentLeasePool.close();
         Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
 
-
-
-       // Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize());
     }
 }

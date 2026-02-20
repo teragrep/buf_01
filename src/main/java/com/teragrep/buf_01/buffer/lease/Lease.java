@@ -70,7 +70,7 @@ public interface Lease<T> extends Closeable {
     /**
      * @return status of the lease, {@code true} indicates that the lease has expired.
      */
-    public abstract boolean isTerminated();
+    public abstract boolean hasZeroRefs();
 
     /**
      * @return is this a stub implementation.

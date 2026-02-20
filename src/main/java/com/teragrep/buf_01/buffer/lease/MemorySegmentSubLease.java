@@ -68,11 +68,15 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
     ) {
         this.memorySegmentContainer = bc;
         // initial registered parties set to 1
-        this.phaser = new ClearingPhaser<>(parent, 1, this);
+        this.phaser = new NonTerminatingPhaser<>(parent, 1);
     }
 
     @Override
     public Lease<MemorySegment> sliced(final long committedOffset) {
+        if (phaser.getRegisteredParties() == 0) {
+            throw new IllegalStateException("Cannot provide slice, ref count = 0 !");
+        }
+
         return new MemorySegmentSubLease(
                 new MemorySegmentContainerImpl(
                         memorySegmentContainer.id(),
@@ -91,8 +95,6 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
     public long refs() {
         // initial number of registered parties is 1
         return phaser.getRegisteredParties();
-
-
     }
 
     @Override
@@ -106,8 +108,8 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
     }
 
     @Override
-    public boolean isTerminated() {
-        return phaser.isTerminated();
+    public boolean hasZeroRefs() {
+        return phaser.getRegisteredParties() == 0;
     }
 
     @Override
