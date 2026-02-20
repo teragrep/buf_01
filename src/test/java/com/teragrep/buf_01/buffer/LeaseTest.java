@@ -48,7 +48,6 @@ package com.teragrep.buf_01.buffer;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.pool.MemorySegmentLeasePoolImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,8 +59,7 @@ final class LeaseTest {
     @Test
     void testOneLease() {
         final Lease<MemorySegment> lease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
-                new MemorySegmentLeasePoolImpl()
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
         );
 
         // refs starts at 1
@@ -80,8 +78,7 @@ final class LeaseTest {
     @Test
     void testSubLeaseCreateAndRemove() {
         final Lease<MemorySegment> lease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
-                new MemorySegmentLeasePoolImpl()
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
         );
 
         // refs starts at 1
@@ -104,8 +101,7 @@ final class LeaseTest {
     @Test
     void testSubLeaseCreateAndRemoveParentRefs() {
         final Lease<MemorySegment> lease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
-                new MemorySegmentLeasePoolImpl()
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
         );
 
         // refs starts at 1

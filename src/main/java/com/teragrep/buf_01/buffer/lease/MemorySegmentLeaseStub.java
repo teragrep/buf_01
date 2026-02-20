@@ -50,7 +50,7 @@ import java.lang.foreign.MemorySegment;
 /**
  * Stub implementation of the {@link Lease}
  */
-public final class MemorySegmentLeaseStub implements Lease<MemorySegment> {
+public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment> {
 
     public MemorySegmentLeaseStub() {
 

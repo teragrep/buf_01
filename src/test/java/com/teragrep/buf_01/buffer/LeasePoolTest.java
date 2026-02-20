@@ -46,12 +46,16 @@
 package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.lease.Lease;
-import com.teragrep.buf_01.buffer.pool.CountablePool;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
-import com.teragrep.buf_01.buffer.pool.MemorySegmentLeasePoolImpl;
+import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
+import com.teragrep.poj_01.pool.Pool;
+import com.teragrep.poj_01.pool.UnboundPool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.List;
@@ -60,14 +64,14 @@ final class LeasePoolTest {
 
     @Test
     void testPool() {
-        final CountablePool<Lease<MemorySegment>> memorySegmentLeasePool = new MemorySegmentLeasePoolImpl();
-        final List<Lease<MemorySegment>> leases = new LeaseMultiGet(memorySegmentLeasePool).get(5);
+        final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
+                new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096), new MemorySegmentLeaseStub()
+        );
+        final List<PoolableLease<MemorySegment>> leases = new LeaseMultiGet(memorySegmentLeasePool).get(5);
 
         Assertions.assertEquals(1, leases.size());
 
-        Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize()); // none in the pool
-
-        final Lease<MemorySegment> lease = leases.getFirst();
+        final PoolableLease<MemorySegment> lease = leases.getFirst();
 
         Assertions.assertFalse(lease.isStub());
 
@@ -91,16 +95,19 @@ final class LeasePoolTest {
 
         Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
 
-        Assertions.assertDoesNotThrow(lease::close); // removes initial ref
+        //Assertions.assertDoesNotThrow(lease::close); // removes initial ref
 
-        Assertions.assertEquals(1, memorySegmentLeasePool.estimatedSize()); // the one offered must be there
+       // Assertions.assertEquals(1, memorySegmentLeasePool.estimatedSize()); // the one offered must be there
 
         Assertions.assertFalse(lease.isTerminated()); // main lease is not terminated, allows reuse
 
-        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
+        memorySegmentLeasePool.offer(lease);
 
         memorySegmentLeasePool.close();
 
-        Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize());
+        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
+
+       // Assertions.assertEquals(0, memorySegmentLeasePool.estimatedSize());
+
     }
 }

@@ -45,25 +45,25 @@
  */
 package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
+import java.io.Closeable;
 
 /**
- * MemorySegmentLease is a decorator for {@link MemorySegmentContainer} with reference counter
+ * Interface for reference tracking shared resources, such as buffers.
  */
-public interface Lease<T> extends AutoCloseable {
+public interface Lease<T> extends Closeable {
 
     /**
-     * @return identity of the decorated {@link MemorySegmentContainer}.
+     * @return id of the leased object
      */
     public abstract long id();
 
     /**
-     * @return current reference count.
+     * @return current reference count
      */
     public abstract long refs();
 
     /**
-     * @return encapsulated MemorySegment of the {@link MemorySegmentContainer}.
+     * @return encapsulated leased object
      */
     public abstract T leasedObject();
 
@@ -81,7 +81,7 @@ public interface Lease<T> extends AutoCloseable {
      * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
      * 
      * @param committedOffset start offset
-     * @return slice of the MemorySegmentLease, registered as a sublease.
+     * @return slice of the lease, registered as a sublease.
      */
     public abstract Lease<T> sliced(long committedOffset);
 }

@@ -45,8 +45,6 @@
  */
 package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.pool.CountablePool;
-
 import java.util.concurrent.Phaser;
 
 /**
@@ -56,18 +54,15 @@ import java.util.concurrent.Phaser;
 class ClearingPhaser<T> extends Phaser {
 
     private final Lease<T> lease;
-    private final CountablePool<Lease<T>> pool;
 
-    ClearingPhaser(int initialParties, Lease<T> lease, CountablePool<Lease<T>> pool) {
+    ClearingPhaser(int initialParties, Lease<T> lease) {
         super(initialParties);
         this.lease = lease;
-        this.pool = pool;
     }
 
-    ClearingPhaser(Phaser parent, int initialParties, Lease<T> lease, CountablePool<Lease<T>> pool) {
+    ClearingPhaser(Phaser parent, int initialParties, Lease<T> lease) {
         super(parent, initialParties);
         this.lease = lease;
-        this.pool = pool;
     }
 
     @Override

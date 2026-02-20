@@ -57,15 +57,18 @@ import java.util.concurrent.Phaser;
  * and returns the {@link MemorySegmentContainer} to {@link com.teragrep.poj_01.pool.Pool} when reference count hits zero.
  * Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking way.
  */
-public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
+public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
 
-    public MemorySegmentLease(MemorySegmentContainer bc) {
+    public MemorySegmentSubLease(
+            MemorySegmentContainer bc,
+            Phaser parent
+    ) {
         this.memorySegmentContainer = bc;
         // initial registered parties set to 1
-        this.phaser = new ClearingPhaser<>(1, this);
+        this.phaser = new ClearingPhaser<>(parent, 1, this);
     }
 
     @Override
@@ -88,6 +91,8 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
     public long refs() {
         // initial number of registered parties is 1
         return phaser.getRegisteredParties();
+
+
     }
 
     @Override
@@ -112,10 +117,6 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
 
     @Override
     public void close() {
-        if (phaser.getParent() == null && phaser.getRegisteredParties() == 1) {
-            leasedObject().fill((byte) 0);
-        }
-
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
         }

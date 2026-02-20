@@ -48,7 +48,7 @@ package com.teragrep.buf_01.buffer.supply;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.pool.CountablePool;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
@@ -58,30 +58,26 @@ public final class DirectByteBufferMemorySegmentLeaseSupplier implements MemoryS
 
     private final int count;
     private final AtomicLong bufferId;
-    private final CountablePool<Lease<MemorySegment>> pool;
 
-    public DirectByteBufferMemorySegmentLeaseSupplier(final int count, final CountablePool<Lease<MemorySegment>> pool) {
-        this(count, new AtomicLong(0L), pool);
+    public DirectByteBufferMemorySegmentLeaseSupplier(final int count) {
+        this(count, new AtomicLong(0L));
     }
 
     public DirectByteBufferMemorySegmentLeaseSupplier(
             final int count,
-            final AtomicLong bufferId,
-            final CountablePool<Lease<MemorySegment>> pool
+            final AtomicLong bufferId
     ) {
         this.count = count;
         this.bufferId = bufferId;
-        this.pool = pool;
     }
 
     @Override
-    public Lease<MemorySegment> get() {
+    public PoolableLease<MemorySegment> get() {
         return new MemorySegmentLease(
                 new MemorySegmentContainerImpl(
                         bufferId.incrementAndGet(),
                         MemorySegment.ofBuffer(ByteBuffer.allocateDirect(count))
-                ),
-                pool
+                )
         );
     }
 

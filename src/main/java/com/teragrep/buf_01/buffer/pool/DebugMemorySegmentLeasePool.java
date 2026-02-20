@@ -48,17 +48,16 @@ package com.teragrep.buf_01.buffer.pool;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.buf_01.buffer.supply.MemorySegmentLeaseSupplier;
+import com.teragrep.poj_01.pool.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -71,16 +70,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * Non-blocking pool for {@link MemorySegmentContainer} objects. All objects in the pool are
  * {@link ByteBuffer#clear()}ed before returning to the pool by {@link Lease}.
  */
-public final class DebugMemorySegmentLeasePool implements CountablePool<Lease<MemorySegment>> {
-    // TODO create tests
-
+public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<MemorySegment>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);
 
     private final Map<Long, MemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
 
-    private final ConcurrentLinkedQueue<Lease<MemorySegment>> queue;
+    private final ConcurrentLinkedQueue<PoolableLease<MemorySegment>> queue;
 
-    private final Lease<MemorySegment> leaseStub;
+    private final PoolableLease<MemorySegment> leaseStub;
     private final AtomicBoolean close;
 
     private final int segmentSize;
@@ -98,19 +95,18 @@ public final class DebugMemorySegmentLeasePool implements CountablePool<Lease<Me
         this.lock = new ReentrantLock();
     }
 
-    public Lease<MemorySegment> take() {
+    public PoolableLease<MemorySegment> get() {
         if (close.get()) {
             return new MemorySegmentLeaseStub();
         }
         // get or create
-        Lease<MemorySegment> lease = queue.poll();
+        PoolableLease<MemorySegment> lease = queue.poll();
         if (lease == null) {
             // if queue is empty or stub object, create a new BufferContainer and BufferLease.
             final MemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
                     Arena.ofShared(),
                     segmentSize,
-                    bufferId,
-                    this
+                    bufferId
             );
             lease = supplier.get();
             suppliers.put(bufferId.get(), supplier);
@@ -129,7 +125,7 @@ public final class DebugMemorySegmentLeasePool implements CountablePool<Lease<Me
      * @param lease {@link MemorySegmentContainer} from {@link Lease} which has been {@link ByteBuffer#clear()}ed.
      */
     @Override
-    public void offer(Lease<MemorySegment> lease) {
+    public void offer(PoolableLease<MemorySegment> lease) {
         // debug pool, instead of returning to pool arena is closed and memorySegment is discarded.
         if (!lease.isStub()) {
             MemorySegmentLeaseSupplier supplier = suppliers.get(lease.id());
@@ -165,14 +161,5 @@ public final class DebugMemorySegmentLeasePool implements CountablePool<Lease<Me
 
         // close all that are in the pool right now
         offer(leaseStub);
-    }
-
-    /**
-     * Estimate the pool size, due to non-blocking nature of the pool, this is only an estimate.
-     * 
-     * @return estimate of the pool size, counting only the residing buffers.
-     */
-    public int estimatedSize() {
-        return queue.size();
     }
 }

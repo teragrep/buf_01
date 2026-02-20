@@ -1,24 +1,25 @@
 package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.buf_01.buffer.lease.Lease;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class LeaseMultiGet implements MultiGet<Lease<MemorySegment>> {
-    private final CountablePool<Lease<MemorySegment>> leasePool;
+public final class LeaseMultiGet implements MultiGet<PoolableLease<MemorySegment>> {
+    private final Pool<PoolableLease<MemorySegment>> leasePool;
 
-    public LeaseMultiGet(final CountablePool<Lease<MemorySegment>> leasePool) {
+    public LeaseMultiGet(final Pool<PoolableLease<MemorySegment>> leasePool) {
         this.leasePool = leasePool;
     }
 
     @Override
-    public List<Lease<MemorySegment>> get(final long count) {
+    public List<PoolableLease<MemorySegment>> get(final long count) {
         long currentSize = 0;
-        final List<Lease<MemorySegment>> leases = new LinkedList<>();
+        final List<PoolableLease<MemorySegment>> leases = new LinkedList<>();
         while (currentSize < count) {
-            final Lease<MemorySegment> lease = leasePool.take();
+            final PoolableLease<MemorySegment> lease = leasePool.get();
             if (lease == null || lease.isStub()) {
                 throw new IllegalStateException("Got stub or null lease from pool!");
             }
