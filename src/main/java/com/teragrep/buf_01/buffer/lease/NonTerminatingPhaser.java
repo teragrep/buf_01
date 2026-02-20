@@ -51,7 +51,7 @@ import java.util.concurrent.Phaser;
  * Phaser that clears the MemorySegment on termination (registeredParties=0), if the lease is not the parent lease.
  * Otherwise, the lease is not fully terminated so it can be reused.
  */
-final class NonTerminatingPhaser<T> extends Phaser {
+final class NonTerminatingPhaser extends Phaser {
 
     NonTerminatingPhaser(final int initialParties) {
         super(initialParties);
