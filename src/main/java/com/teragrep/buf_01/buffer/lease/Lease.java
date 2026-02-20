@@ -43,51 +43,45 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.lease;
 
-import java.nio.ByteBuffer;
+import java.io.Closeable;
 
 /**
- * Stub implementation of the {@link BufferLease}
+ * Interface for reference tracking shared resources, such as buffers.
  */
-public final class BufferLeaseStub implements BufferLease {
+public interface Lease<T> extends Closeable {
 
-    public BufferLeaseStub() {
+    /**
+     * @return id of the leased object
+     */
+    public abstract long id();
 
-    }
+    /**
+     * @return current reference count
+     */
+    public abstract long refs();
 
-    @Override
-    public long id() {
-        throw new IllegalStateException("BufferLeaseStub does not have an id!");
-    }
+    /**
+     * @return encapsulated leased object
+     */
+    public abstract T leasedObject();
 
-    @Override
-    public long refs() {
-        throw new IllegalStateException("BufferLeaseStub does not have refs!");
-    }
+    /**
+     * @return status of the lease, {@code true} indicates that the lease has expired.
+     */
+    public abstract boolean hasZeroRefs();
 
-    @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferLeaseStub does not have a buffer!");
-    }
+    /**
+     * @return is this a stub implementation.
+     */
+    public abstract boolean isStub();
 
-    @Override
-    public void addRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow adding refs!");
-    }
-
-    @Override
-    public void removeRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow removing refs!");
-    }
-
-    @Override
-    public boolean isTerminated() {
-        throw new IllegalStateException("BufferLeaseStub does not have ref count!");
-    }
-
-    @Override
-    public boolean isStub() {
-        return true;
-    }
+    /**
+     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
+     * 
+     * @param committedOffset start offset
+     * @return slice of the lease, registered as a sublease.
+     */
+    public abstract Lease<T> sliced(long committedOffset);
 }

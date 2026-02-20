@@ -43,45 +43,11 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.pool;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
-import java.nio.ByteBuffer;
+public interface MultiGet<T> {
 
-/**
- * Decorator for {@link ByteBuffer} with a synchronized access for it.
- */
-public final class BufferContainerImpl implements BufferContainer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BufferContainerImpl.class);
-    private final long id;
-    private final ByteBuffer buffer;
-
-    public BufferContainerImpl(long id, ByteBuffer buffer) {
-        this.id = id;
-        this.buffer = buffer;
-    }
-
-    @Override
-    public long id() {
-        return id;
-    }
-
-    @Override
-    public synchronized ByteBuffer buffer() {
-        return buffer;
-    }
-
-    @Override
-    public String toString() {
-        return "BufferContainer{" + "buffer=" + buffer + ", id=" + id + '}';
-    }
-
-    @Override
-    public boolean isStub() {
-        LOGGER.debug("id <{}>", id);
-        return false;
-    }
+    public abstract List<T> get(long count);
 }

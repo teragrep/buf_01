@@ -43,47 +43,42 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.supply;
 
-import java.nio.ByteBuffer;
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 
-/**
- * BufferLease is a decorator for {@link BufferContainer} with reference counter
- */
-public interface BufferLease {
+import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.util.concurrent.atomic.AtomicLong;
 
-    /**
-     * @return identity of the decorated {@link BufferContainer}.
-     */
-    public abstract long id();
+public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLeaseSupplier {
 
-    /**
-     * @return current reference count.
-     */
-    public abstract long refs();
+    private final Arena arena;
+    private final long count;
+    private final AtomicLong bufferId;
 
-    /**
-     * @return encapsulated buffer of the {@link BufferContainer}.
-     */
-    public abstract ByteBuffer buffer();
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count) {
+        this(arena, count, new AtomicLong(0L));
+    }
 
-    /**
-     * Add reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void addRef() throws IllegalStateException;
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count, final AtomicLong bufferId) {
+        this.arena = arena;
+        this.count = count;
+        this.bufferId = bufferId;
+    }
 
-    /**
-     * Remove reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void removeRef() throws IllegalStateException;
+    @Override
+    public PoolableLease<MemorySegment> get() {
+        return new MemorySegmentLease(
+                new MemorySegmentContainerImpl(bufferId.incrementAndGet(), arena.allocate(ValueLayout.JAVA_BYTE, count))
+        );
+    }
 
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean isTerminated();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
+    @Override
+    public void close() {
+        arena.close();
+    }
 }

@@ -43,33 +43,50 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.lease;
 
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Phaser;
 
 /**
- * Decorator for {@link BufferContainer} that automatically clears (frees) the encapsulated {@link ByteBuffer} and
- * returns the {@link BufferContainer} to {@link BufferLeasePool} when reference count hits zero. Starts with one
- * initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking way.
+ * Decorator for {@link MemorySegmentContainer} that automatically clears (frees) the encapsulated {@link ByteBuffer}
+ * and returns the {@link MemorySegmentContainer} to {@link com.teragrep.poj_01.pool.Pool} when reference count hits
+ * zero. Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking
+ * way.
  */
-public final class BufferLeaseImpl implements BufferLease {
+public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
-    private final BufferContainer bufferContainer;
+    private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
-    private final BufferLeasePool bufferLeasePool;
 
-    public BufferLeaseImpl(BufferContainer bc, BufferLeasePool bufferLeasePool) {
-        this.bufferContainer = bc;
-        this.bufferLeasePool = bufferLeasePool;
-
+    public MemorySegmentSubLease(MemorySegmentContainer bc, Phaser parent) {
+        this.memorySegmentContainer = bc;
         // initial registered parties set to 1
-        this.phaser = new ClearingPhaser(1);
+        this.phaser = new NonTerminatingPhaser(parent, 1);
+    }
+
+    @Override
+    public Lease<MemorySegment> sliced(final long committedOffset) {
+        if (phaser.getRegisteredParties() == 0) {
+            throw new IllegalStateException("Cannot provide slice, ref count = 0 !");
+        }
+
+        return new MemorySegmentSubLease(
+                new MemorySegmentContainerImpl(
+                        memorySegmentContainer.id(),
+                        memorySegmentContainer.memorySegment().asSlice(committedOffset)
+                ),
+                phaser
+        );
     }
 
     @Override
     public long id() {
-        return bufferContainer.id();
+        return memorySegmentContainer.id();
     }
 
     @Override
@@ -79,58 +96,29 @@ public final class BufferLeaseImpl implements BufferLease {
     }
 
     @Override
-    public ByteBuffer buffer() {
-        if (phaser.isTerminated()) {
+    public MemorySegment leasedObject() {
+        if (phaser.getRegisteredParties() == 0) {
             throw new IllegalStateException(
-                    "Cannot return wrapped ByteBuffer, BufferLease phaser was already terminated!"
+                    "Cannot return wrapped MemorySegment, MemorySegmentLease phaser was already terminated!"
             );
         }
-        return bufferContainer.buffer();
+        return memorySegmentContainer.memorySegment();
     }
 
     @Override
-    public void addRef() {
-        if (phaser.register() < 0) {
-            throw new IllegalStateException("Cannot add reference, BufferLease phaser was already terminated!");
-        }
-    }
-
-    @Override
-    public void removeRef() {
-        if (phaser.arriveAndDeregister() < 0) {
-            throw new IllegalStateException("Cannot remove reference, BufferLease phaser was already terminated!");
-        }
-    }
-
-    @Override
-    public boolean isTerminated() {
-        return phaser.isTerminated();
+    public boolean hasZeroRefs() {
+        return phaser.getRegisteredParties() == 0;
     }
 
     @Override
     public boolean isStub() {
-        return bufferContainer.isStub();
+        return memorySegmentContainer.isStub();
     }
 
-    /**
-     * Phaser that clears the buffer on termination (registeredParties=0)
-     */
-    private class ClearingPhaser extends Phaser {
-
-        public ClearingPhaser(int i) {
-            super(i);
-        }
-
-        @Override
-        protected boolean onAdvance(int phase, int registeredParties) {
-            boolean rv = false;
-            if (registeredParties == 0) {
-                buffer().clear();
-                bufferLeasePool.internalOffer(bufferContainer);
-                rv = true;
-            }
-            return rv;
+    @Override
+    public void close() {
+        if (phaser.arriveAndDeregister() < 0) {
+            throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
         }
     }
-
 }

@@ -43,27 +43,31 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.container;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 
 /**
- * BufferContainer is a decorator for {@link ByteBuffer} with an id.
+ * Stub implementation of the {@link MemorySegmentContainer}.
  */
-public interface BufferContainer {
+public final class MemorySegmentContainerStub implements MemorySegmentContainer {
 
-    /**
-     * @return id of the buffer
-     */
-    public abstract long id();
+    public MemorySegmentContainerStub() {
 
-    /**
-     * @return encapsulated {@link ByteBuffer}.
-     */
-    public abstract ByteBuffer buffer();
+    }
 
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
+    @Override
+    public long id() {
+        throw new IllegalStateException("MemorySegmentContainerStub does not have an id!");
+    }
+
+    @Override
+    public MemorySegment memorySegment() {
+        throw new IllegalStateException("MemorySegmentContainerStub does not allow access to the MemorySegment!");
+    }
+
+    @Override
+    public boolean isStub() {
+        return true;
+    }
 }

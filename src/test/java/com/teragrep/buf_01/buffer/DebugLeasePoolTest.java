@@ -45,73 +45,57 @@
  */
 package com.teragrep.buf_01.buffer;
 
+import com.teragrep.buf_01.buffer.lease.Lease;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.pool.DebugMemorySegmentLeasePool;
+import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
+import com.teragrep.poj_01.pool.Pool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
 import java.util.List;
 
-public final class BufferLeasePoolTest {
+final class DebugLeasePoolTest {
 
     @Test
-    public void testPool() {
-        BufferLeasePool bufferLeasePool = new BufferLeasePool();
-        List<BufferLease> leases = bufferLeasePool.take(1);
+    void testPool() {
+        final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new DebugMemorySegmentLeasePool();
+        final List<PoolableLease<MemorySegment>> leases = new LeaseMultiGet(memorySegmentLeasePool).get(5);
 
         Assertions.assertEquals(1, leases.size());
 
-        Assertions.assertEquals(0, bufferLeasePool.estimatedSize()); // none in the pool
-
-        BufferLease lease = leases.get(0);
+        final Lease<MemorySegment> lease = leases.getFirst();
 
         Assertions.assertFalse(lease.isStub());
 
-        Assertions.assertFalse(lease.isTerminated()); // initially 1 refs
+        Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-        lease.addRef();
+        final Lease<MemorySegment> slice = lease.sliced(2);
 
         Assertions.assertEquals(2, lease.refs());
 
-        lease.buffer().put((byte) 'x');
+        lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
 
-        Assertions.assertEquals(1, lease.buffer().position());
-
-        lease.buffer().flip();
-
-        Assertions.assertEquals(0, lease.buffer().position());
-
-        Assertions.assertEquals(1, lease.buffer().limit());
-
-        Assertions.assertEquals((byte) 'x', lease.buffer().get());
-
-        Assertions.assertEquals(1, lease.buffer().position());
+        Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
 
         Assertions.assertEquals(2, lease.refs());
 
-        lease.removeRef();
+        Assertions.assertDoesNotThrow(slice::close);
 
-        Assertions.assertFalse(lease.isTerminated()); // initial ref must be still in place
+        Assertions.assertFalse(lease.hasZeroRefs()); // initial ref must be still in place
 
         Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
 
-        ByteBuffer buffer = lease.buffer(); // get a hold of a reference
+        Assertions.assertDoesNotThrow(lease::close); // removes initial ref
 
-        lease.removeRef(); // removes initial ref
+        Assertions.assertTrue(lease.hasZeroRefs()); // no refs, so isTerminated=true
 
-        Assertions.assertEquals(1, bufferLeasePool.estimatedSize()); // the one offered must be there
+        memorySegmentLeasePool.close();
+        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
 
-        Assertions.assertTrue(lease.isTerminated()); // no refs
-
-        Assertions.assertThrows(IllegalStateException.class, lease::buffer);
-
-        Assertions.assertEquals(buffer.capacity(), buffer.limit());
-
-        Assertions.assertEquals(0, buffer.position());
-
-        bufferLeasePool.close();
-
-        Assertions.assertEquals(0, bufferLeasePool.estimatedSize());
     }
 }

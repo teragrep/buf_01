@@ -43,31 +43,28 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.lease;
 
-import java.nio.ByteBuffer;
+import java.util.concurrent.Phaser;
 
 /**
- * Stub implementation of the {@link BufferContainer}.
+ * Phaser that clears the MemorySegment on termination (registeredParties=0), if the lease is not the parent lease.
+ * Otherwise, the lease is not fully terminated so it can be reused.
  */
-public final class BufferContainerStub implements BufferContainer {
+final class NonTerminatingPhaser extends Phaser {
 
-    public BufferContainerStub() {
+    NonTerminatingPhaser(final int initialParties) {
+        super(initialParties);
+    }
 
+    NonTerminatingPhaser(final Phaser parent, final int initialParties) {
+        super(parent, initialParties);
     }
 
     @Override
-    public long id() {
-        throw new IllegalStateException("BufferContainerStub does not have an id!");
-    }
-
-    @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferContainerStub does not allow access to the buffer!");
-    }
-
-    @Override
-    public boolean isStub() {
-        return true;
+    protected boolean onAdvance(final int phase, final int registeredParties) {
+        // Phaser will never terminate, enabling re-use
+        // **Please note that this method is only called on the root phaser**
+        return false;
     }
 }
