@@ -46,7 +46,6 @@
 package com.teragrep.buf_01.buffer.supply;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
-import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
 
@@ -61,18 +60,11 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
     private final long count;
     private final AtomicLong bufferId;
 
-    public ArenaMemorySegmentLeaseSupplier(
-            final Arena arena,
-            final long count
-    ) {
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count) {
         this(arena, count, new AtomicLong(0L));
     }
 
-    public ArenaMemorySegmentLeaseSupplier(
-            final Arena arena,
-            final long count,
-            final AtomicLong bufferId
-    ) {
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count, final AtomicLong bufferId) {
         this.arena = arena;
         this.count = count;
         this.bufferId = bufferId;

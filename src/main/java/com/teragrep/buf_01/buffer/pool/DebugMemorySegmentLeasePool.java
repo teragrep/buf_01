@@ -71,6 +71,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@link ByteBuffer#clear()}ed before returning to the pool by {@link Lease}.
  */
 public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<MemorySegment>> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);
 
     private final Map<Long, MemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();

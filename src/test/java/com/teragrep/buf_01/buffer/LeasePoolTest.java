@@ -65,7 +65,8 @@ final class LeasePoolTest {
     @Test
     void testPool() {
         final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
-                new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096), new MemorySegmentLeaseStub()
+                new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096),
+                new MemorySegmentLeaseStub()
         );
         final List<PoolableLease<MemorySegment>> leases = new LeaseMultiGet(memorySegmentLeasePool).get(5);
 

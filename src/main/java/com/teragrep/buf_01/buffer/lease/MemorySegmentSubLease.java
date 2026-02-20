@@ -54,18 +54,16 @@ import java.util.concurrent.Phaser;
 
 /**
  * Decorator for {@link MemorySegmentContainer} that automatically clears (frees) the encapsulated {@link ByteBuffer}
- * and returns the {@link MemorySegmentContainer} to {@link com.teragrep.poj_01.pool.Pool} when reference count hits zero.
- * Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking way.
+ * and returns the {@link MemorySegmentContainer} to {@link com.teragrep.poj_01.pool.Pool} when reference count hits
+ * zero. Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking
+ * way.
  */
 public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
 
-    public MemorySegmentSubLease(
-            MemorySegmentContainer bc,
-            Phaser parent
-    ) {
+    public MemorySegmentSubLease(MemorySegmentContainer bc, Phaser parent) {
         this.memorySegmentContainer = bc;
         // initial registered parties set to 1
         this.phaser = new NonTerminatingPhaser<>(parent, 1);
