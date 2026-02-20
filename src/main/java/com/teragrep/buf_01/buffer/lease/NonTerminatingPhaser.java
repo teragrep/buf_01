@@ -64,6 +64,7 @@ final class NonTerminatingPhaser extends Phaser {
     @Override
     protected boolean onAdvance(final int phase, final int registeredParties) {
         // Phaser will never terminate, enabling re-use
+        // **Please note that this method is only called on the root phaser**
         return false;
     }
 }
