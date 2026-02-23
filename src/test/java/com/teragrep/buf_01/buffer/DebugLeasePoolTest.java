@@ -48,25 +48,20 @@ package com.teragrep.buf_01.buffer;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.pool.DebugMemorySegmentLeasePool;
-import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
 import com.teragrep.poj_01.pool.Pool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
-import java.util.List;
 
 final class DebugLeasePoolTest {
 
     @Test
     void testPool() {
         final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new DebugMemorySegmentLeasePool();
-        final List<PoolableLease<MemorySegment>> leases = new LeaseMultiGet(memorySegmentLeasePool).get(5);
 
-        Assertions.assertEquals(1, leases.size());
-
-        final Lease<MemorySegment> lease = leases.getFirst();
+        final Lease<MemorySegment> lease = memorySegmentLeasePool.get();
 
         Assertions.assertFalse(lease.isStub());
 
