@@ -59,6 +59,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -162,5 +163,22 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
 
         // close all that are in the pool right now
         offer(leaseStub);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final DebugMemorySegmentLeasePool that = (DebugMemorySegmentLeasePool) o;
+        return segmentSize == that.segmentSize && Objects.equals(suppliers, that.suppliers) && Objects
+                .equals(queue, that.queue) && Objects.equals(leaseStub, that.leaseStub) && Objects
+                        .equals(close, that.close)
+                && Objects.equals(bufferId, that.bufferId) && Objects.equals(lock, that.lock);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(suppliers, queue, leaseStub, close, segmentSize, bufferId, lock);
     }
 }

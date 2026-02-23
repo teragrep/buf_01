@@ -49,6 +49,7 @@ import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.pool.DebugMemorySegmentLeasePool;
 import com.teragrep.poj_01.pool.Pool;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -91,6 +92,10 @@ final class DebugLeasePoolTest {
 
         memorySegmentLeasePool.close();
         Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
+    }
 
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(DebugMemorySegmentLeasePool.class).verify();
     }
 }

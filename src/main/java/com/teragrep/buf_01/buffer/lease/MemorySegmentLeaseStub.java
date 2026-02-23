@@ -46,14 +46,21 @@
 package com.teragrep.buf_01.buffer.lease;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
  * Stub implementation of the {@link Lease}
  */
 public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment> {
 
-    public MemorySegmentLeaseStub() {
+    private final boolean isStub;
 
+    public MemorySegmentLeaseStub() {
+        this(true);
+    }
+
+    private MemorySegmentLeaseStub(final boolean isStub) {
+        this.isStub = isStub;
     }
 
     @Override
@@ -78,7 +85,7 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
 
     @Override
     public boolean isStub() {
-        return true;
+        return isStub;
     }
 
     @Override
@@ -89,5 +96,19 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
     @Override
     public void close() {
         throw new IllegalStateException("MemorySegmentLeaseStub cannot be closed!");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentLeaseStub that = (MemorySegmentLeaseStub) o;
+        return isStub == that.isStub;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isStub);
     }
 }

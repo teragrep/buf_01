@@ -52,6 +52,7 @@ import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLeaseSupplier {
@@ -80,5 +81,19 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
     @Override
     public void close() {
         arena.close();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ArenaMemorySegmentLeaseSupplier that = (ArenaMemorySegmentLeaseSupplier) o;
+        return count == that.count && Objects.equals(arena, that.arena) && Objects.equals(bufferId, that.bufferId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arena, count, bufferId);
     }
 }

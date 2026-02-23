@@ -46,14 +46,21 @@
 package com.teragrep.buf_01.buffer.container;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
  * Stub implementation of the {@link MemorySegmentContainer}.
  */
 public final class MemorySegmentContainerStub implements MemorySegmentContainer {
 
-    public MemorySegmentContainerStub() {
+    private final boolean isStub;
 
+    public MemorySegmentContainerStub() {
+        this(true);
+    }
+
+    private MemorySegmentContainerStub(final boolean isStub) {
+        this.isStub = isStub;
     }
 
     @Override
@@ -68,6 +75,20 @@ public final class MemorySegmentContainerStub implements MemorySegmentContainer 
 
     @Override
     public boolean isStub() {
-        return true;
+        return isStub;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentContainerStub that = (MemorySegmentContainerStub) o;
+        return isStub == that.isStub;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isStub);
     }
 }

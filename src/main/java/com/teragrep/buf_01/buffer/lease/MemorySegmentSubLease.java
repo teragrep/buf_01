@@ -49,6 +49,7 @@ import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 import java.util.concurrent.Phaser;
 
 /**
@@ -125,5 +126,20 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentSubLease that = (MemorySegmentSubLease) o;
+        return Objects.equals(memorySegmentContainer, that.memorySegmentContainer)
+                && Objects.equals(phaser, that.phaser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memorySegmentContainer, phaser);
     }
 }

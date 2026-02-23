@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
  * Decorator for {@link MemorySegment} with a synchronized access for it.
@@ -83,5 +84,19 @@ public final class MemorySegmentContainerImpl implements MemorySegmentContainer 
     public boolean isStub() {
         LOGGER.debug("id <{}>", id);
         return false;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentContainerImpl that = (MemorySegmentContainerImpl) o;
+        return id == that.id && Objects.equals(memorySegment, that.memorySegment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, memorySegment);
     }
 }

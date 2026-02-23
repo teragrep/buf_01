@@ -51,6 +51,7 @@ import com.teragrep.poj_01.pool.Pool;
 import java.lang.foreign.MemorySegment;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public final class LeaseMultiGet implements MultiGet<PoolableLease<MemorySegment>> {
 
@@ -73,5 +74,19 @@ public final class LeaseMultiGet implements MultiGet<PoolableLease<MemorySegment
             currentSize += lease.leasedObject().byteSize();
         }
         return leases;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final LeaseMultiGet that = (LeaseMultiGet) o;
+        return Objects.equals(leasePool, that.leasePool);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(leasePool);
     }
 }

@@ -52,6 +52,7 @@ import com.teragrep.buf_01.buffer.pool.MultiGet;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.UnboundPool;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -116,5 +117,10 @@ final class LeaseMultiGetTest {
         final List<PoolableLease<MemorySegment>> leases = multiGet.get(0);
 
         Assertions.assertEquals(0, leases.size());
+    }
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(LeaseMultiGet.class).verify();
     }
 }

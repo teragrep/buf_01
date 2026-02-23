@@ -48,11 +48,14 @@ package com.teragrep.buf_01.buffer;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Phaser;
 
 final class LeaseTest {
 
@@ -156,5 +159,17 @@ final class LeaseTest {
         // Slice is not terminated, since refs=1
         Assertions.assertFalse(slice.hasZeroRefs());
         Assertions.assertEquals(1, slice.refs());
+    }
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier
+                .forClass(MemorySegmentLease.class)
+                .withPrefabValues(Phaser.class, new Phaser(1), new Phaser(1))
+                .verify();
+        EqualsVerifier
+                .forClass(MemorySegmentSubLease.class)
+                .withPrefabValues(Phaser.class, new Phaser(1), new Phaser(1))
+                .verify();
     }
 }
