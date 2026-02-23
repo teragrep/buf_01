@@ -117,6 +117,12 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     @Override
     public void close() {
+        if (phaser.getRegisteredParties() > 1) {
+            throw new IllegalStateException(
+                    "Cannot close sub-lease, has <" + phaser.getRegisteredParties() + "> references."
+            );
+        }
+
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
         }

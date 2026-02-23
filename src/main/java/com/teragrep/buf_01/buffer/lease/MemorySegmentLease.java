@@ -116,6 +116,11 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
         if (phaser.getParent() == null && phaser.getRegisteredParties() == 1) {
             leasedObject().fill((byte) 0);
         }
+        else {
+            throw new IllegalStateException(
+                    "Cannot close lease, has <" + phaser.getRegisteredParties() + "> references."
+            );
+        }
 
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");

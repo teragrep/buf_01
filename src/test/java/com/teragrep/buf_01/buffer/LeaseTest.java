@@ -130,4 +130,31 @@ final class LeaseTest {
         Assertions.assertTrue(slice.hasZeroRefs());
         Assertions.assertEquals(0, slice.refs());
     }
+
+    @Test
+    void testCloseParentLeaseWithSlice() {
+        final Lease<MemorySegment> lease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
+        );
+
+        // refs starts at 1
+        Assertions.assertEquals(1L, lease.refs());
+        Assertions.assertFalse(lease.hasZeroRefs());
+
+        // slice
+        final Lease<MemorySegment> slice = lease.sliced(512);
+        Assertions.assertEquals(1L, slice.refs());
+        Assertions.assertEquals(2L, lease.refs());
+
+        final IllegalStateException ise = Assertions.assertThrows(IllegalStateException.class, lease::close);
+
+        Assertions.assertEquals("Cannot close lease, has <2> references.", ise.getMessage());
+        // Parent lease not terminated, with 2 refs. One for itself and one for the slice.
+        Assertions.assertFalse(lease.hasZeroRefs());
+        Assertions.assertEquals(2, lease.refs());
+
+        // Slice is not terminated, since refs=1
+        Assertions.assertFalse(slice.hasZeroRefs());
+        Assertions.assertEquals(1, slice.refs());
+    }
 }
