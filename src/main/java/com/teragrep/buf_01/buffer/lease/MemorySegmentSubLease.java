@@ -49,14 +49,13 @@ import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 
 import java.lang.foreign.MemorySegment;
-import java.nio.ByteBuffer;
 import java.util.concurrent.Phaser;
 
 /**
- * Decorator for {@link MemorySegmentContainer} that automatically clears (frees) the encapsulated {@link ByteBuffer}
- * and returns the {@link MemorySegmentContainer} to {@link com.teragrep.poj_01.pool.Pool} when reference count hits
- * zero. Starts with one initial reference. Internally uses a {@link Phaser} to track reference count in a non-blocking
- * way.
+ * Decorator for {@link MemorySegmentContainer} that zeroes the encapsulated {@link MemorySegment} on {@link #close()}.
+ * Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track reference count in a
+ * non-blocking way. Used for sub-leases, which are not to be returned to a {@link com.teragrep.poj_01.pool.Pool}, which
+ * is why it uses a {@link Lease} instead of a {@link PoolableLease}.
  */
 public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 

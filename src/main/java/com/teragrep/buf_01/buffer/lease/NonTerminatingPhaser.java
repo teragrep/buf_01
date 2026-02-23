@@ -48,8 +48,7 @@ package com.teragrep.buf_01.buffer.lease;
 import java.util.concurrent.Phaser;
 
 /**
- * Phaser that clears the MemorySegment on termination (registeredParties=0), if the lease is not the parent lease.
- * Otherwise, the lease is not fully terminated so it can be reused.
+ * Phaser that has the termination state disabled.
  */
 final class NonTerminatingPhaser extends Phaser {
 

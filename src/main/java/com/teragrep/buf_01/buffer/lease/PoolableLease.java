@@ -47,5 +47,10 @@ package com.teragrep.buf_01.buffer.lease;
 
 import com.teragrep.poj_01.pool.Poolable;
 
+/**
+ * Generic Lease type for leases which are to be returned to a Pool.
+ * 
+ * @param <T> Type for the generic class {@link Lease}
+ */
 public interface PoolableLease<T> extends Lease<T>, Poolable {
 }
