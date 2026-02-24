@@ -100,4 +100,24 @@ final class LeasePoolTest {
         Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
 
     }
+
+    @Test
+    void testReturnsTheSameInstance() {
+        try (
+                final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
+                        new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096),
+                        new MemorySegmentLeaseStub()
+                )
+        ) {
+            final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
+
+            memorySegmentLeasePool.offer(lease);
+
+            final PoolableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
+
+            memorySegmentLeasePool.offer(lease2);
+
+            Assertions.assertEquals(lease, lease2);
+        }
+    }
 }

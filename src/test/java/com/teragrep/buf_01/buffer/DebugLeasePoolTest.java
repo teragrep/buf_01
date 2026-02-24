@@ -95,6 +95,21 @@ final class DebugLeasePoolTest {
     }
 
     @Test
+    void testDoesNotReturnTheSameInstance() {
+        try (final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new DebugMemorySegmentLeasePool()) {
+            final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
+
+            memorySegmentLeasePool.offer(lease);
+
+            final PoolableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
+
+            memorySegmentLeasePool.offer(lease2);
+
+            Assertions.assertNotEquals(lease, lease2);
+        }
+    }
+
+    @Test
     void testEqualsContract() {
         EqualsVerifier.forClass(DebugMemorySegmentLeasePool.class).verify();
     }

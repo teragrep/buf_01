@@ -66,4 +66,5 @@ final class NonTerminatingPhaser extends Phaser {
         // **Please note that this method is only called on the root phaser**
         return false;
     }
+
 }
