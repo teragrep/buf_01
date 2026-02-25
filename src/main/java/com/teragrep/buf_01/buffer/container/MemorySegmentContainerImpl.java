@@ -71,7 +71,7 @@ public final class MemorySegmentContainerImpl implements MemorySegmentContainer 
     }
 
     @Override
-    public synchronized MemorySegment memorySegment() {
+    public MemorySegment memorySegment() {
         return memorySegment;
     }
 
