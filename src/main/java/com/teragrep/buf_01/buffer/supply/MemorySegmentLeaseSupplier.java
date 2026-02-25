@@ -55,5 +55,6 @@ public interface MemorySegmentLeaseSupplier extends Supplier<PoolableLease<Memor
     @Override
     PoolableLease<MemorySegment> get();
 
+    @Override
     void close();
 }
