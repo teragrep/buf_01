@@ -45,12 +45,10 @@
  */
 package com.teragrep.buf_01.buffer.lease;
 
-import java.io.Closeable;
-
 /**
  * Interface for reference tracking shared resources, such as buffers.
  */
-public interface Lease<T> extends Closeable {
+public interface Lease<T> extends AutoCloseable {
 
     /**
      * @return id of the leased object
