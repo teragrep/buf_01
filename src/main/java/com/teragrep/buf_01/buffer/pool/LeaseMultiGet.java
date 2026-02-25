@@ -49,7 +49,7 @@ import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,13 +62,13 @@ public final class LeaseMultiGet implements MultiGet<PoolableLease<MemorySegment
     }
 
     @Override
-    public List<PoolableLease<MemorySegment>> get(final long count) {
+    public List<PoolableLease<MemorySegment>> get(final long bytesCount) {
         long currentSize = 0;
-        final List<PoolableLease<MemorySegment>> leases = new LinkedList<>();
-        while (currentSize < count) {
+        final List<PoolableLease<MemorySegment>> leases = new ArrayList<>();
+        while (currentSize < bytesCount) {
             final PoolableLease<MemorySegment> lease = leasePool.get();
-            if (lease == null || lease.isStub()) {
-                throw new IllegalStateException("Got stub or null lease from pool!");
+            if (lease.isStub()) {
+                throw new IllegalStateException("Pool supplied a stub lease!");
             }
             leases.add(lease);
             currentSize += lease.leasedObject().byteSize();
