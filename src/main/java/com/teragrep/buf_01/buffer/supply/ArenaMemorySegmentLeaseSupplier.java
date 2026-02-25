@@ -58,23 +58,23 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLeaseSupplier {
 
     private final Arena arena;
-    private final long count;
+    private final long blockSize;
     private final AtomicLong bufferId;
 
-    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count) {
-        this(arena, count, new AtomicLong(0L));
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize) {
+        this(arena, blockSize, new AtomicLong(0L));
     }
 
-    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long count, final AtomicLong bufferId) {
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize, final AtomicLong bufferId) {
         this.arena = arena;
-        this.count = count;
+        this.blockSize = blockSize;
         this.bufferId = bufferId;
     }
 
     @Override
     public PoolableLease<MemorySegment> get() {
         return new MemorySegmentLease(
-                new MemorySegmentContainerImpl(bufferId.incrementAndGet(), arena.allocate(ValueLayout.JAVA_BYTE, count))
+                new MemorySegmentContainerImpl(bufferId.incrementAndGet(), arena.allocate(ValueLayout.JAVA_BYTE, blockSize))
         );
     }
 
@@ -89,11 +89,11 @@ public final class ArenaMemorySegmentLeaseSupplier implements MemorySegmentLease
             return false;
         }
         final ArenaMemorySegmentLeaseSupplier that = (ArenaMemorySegmentLeaseSupplier) o;
-        return count == that.count && Objects.equals(arena, that.arena) && Objects.equals(bufferId, that.bufferId);
+        return blockSize == that.blockSize && Objects.equals(arena, that.arena) && Objects.equals(bufferId, that.bufferId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(arena, count, bufferId);
+        return Objects.hash(arena, blockSize, bufferId);
     }
 }
