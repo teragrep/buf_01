@@ -75,7 +75,7 @@ final class LeasePoolTest {
 
         Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-        final Lease<MemorySegment> slice = lease.sliced(2);
+        final Lease<MemorySegment> slice = lease.sliceAt(2);
 
         Assertions.assertEquals(2, lease.refs());
 

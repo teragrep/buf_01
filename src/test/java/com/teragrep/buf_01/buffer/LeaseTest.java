@@ -93,7 +93,7 @@ final class LeaseTest {
         Assertions.assertFalse(rootLease.hasZeroRefs());
 
         // slice
-        final Lease<MemorySegment> slice = rootLease.sliced(512);
+        final Lease<MemorySegment> slice = rootLease.sliceAt(512);
 
         Assertions.assertEquals(2L, rootLease.refs());
 
@@ -116,7 +116,7 @@ final class LeaseTest {
         Assertions.assertFalse(lease.hasZeroRefs());
 
         // slice
-        final Lease<MemorySegment> slice = lease.sliced(512);
+        final Lease<MemorySegment> slice = lease.sliceAt(512);
         Assertions.assertEquals(1L, slice.refs());
         Assertions.assertEquals(2L, lease.refs());
 
@@ -145,7 +145,7 @@ final class LeaseTest {
         Assertions.assertFalse(lease.hasZeroRefs());
 
         // slice
-        final Lease<MemorySegment> slice = lease.sliced(512);
+        final Lease<MemorySegment> slice = lease.sliceAt(512);
         Assertions.assertEquals(1L, slice.refs());
         Assertions.assertEquals(2L, lease.refs());
 

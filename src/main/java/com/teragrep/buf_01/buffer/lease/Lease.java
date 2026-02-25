@@ -80,8 +80,8 @@ public interface Lease<T> extends Closeable {
     /**
      * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
      * 
-     * @param committedOffset start offset
+     * @param offset start offset
      * @return slice of the lease, registered as a sublease.
      */
-    public abstract Lease<T> sliced(long committedOffset);
+    public abstract Lease<T> sliceAt(long offset);
 }

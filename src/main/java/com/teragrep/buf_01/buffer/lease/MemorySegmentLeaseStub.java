@@ -89,7 +89,7 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
     }
 
     @Override
-    public Lease<MemorySegment> sliced(final long committedOffset) {
+    public Lease<MemorySegment> sliceAt(final long offset) {
         throw new IllegalStateException("MemorySegmentLeaseStub does not allow slicing!");
     }
 

@@ -69,11 +69,11 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
     }
 
     @Override
-    public Lease<MemorySegment> sliced(final long committedOffset) {
+    public Lease<MemorySegment> sliceAt(final long offset) {
         return new MemorySegmentSubLease(
                 new MemorySegmentContainerImpl(
                         memorySegmentContainer.id(),
-                        memorySegmentContainer.memorySegment().asSlice(committedOffset)
+                        memorySegmentContainer.memorySegment().asSlice(offset)
                 ),
                 phaser
         );

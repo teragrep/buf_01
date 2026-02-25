@@ -70,7 +70,7 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
     }
 
     @Override
-    public Lease<MemorySegment> sliced(final long committedOffset) {
+    public Lease<MemorySegment> sliceAt(final long offset) {
         if (phaser.getRegisteredParties() == 0) {
             throw new IllegalStateException("Cannot provide slice, ref count = 0 !");
         }
@@ -78,7 +78,7 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
         return new MemorySegmentSubLease(
                 new MemorySegmentContainerImpl(
                         memorySegmentContainer.id(),
-                        memorySegmentContainer.memorySegment().asSlice(committedOffset)
+                        memorySegmentContainer.memorySegment().asSlice(offset)
                 ),
                 phaser
         );
