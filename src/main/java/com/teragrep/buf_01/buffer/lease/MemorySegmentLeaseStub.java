@@ -43,51 +43,72 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.lease;
 
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
- * Stub implementation of the {@link BufferLease}
+ * Stub implementation of the {@link Lease}
  */
-public final class BufferLeaseStub implements BufferLease {
+public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment> {
 
-    public BufferLeaseStub() {
+    private final boolean isStub;
 
+    public MemorySegmentLeaseStub() {
+        this(true);
+    }
+
+    private MemorySegmentLeaseStub(final boolean isStub) {
+        this.isStub = isStub;
     }
 
     @Override
     public long id() {
-        throw new IllegalStateException("BufferLeaseStub does not have an id!");
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have an id!");
     }
 
     @Override
     public long refs() {
-        throw new IllegalStateException("BufferLeaseStub does not have refs!");
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have refs!");
     }
 
     @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferLeaseStub does not have a buffer!");
+    public MemorySegment leasedObject() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have a buffer!");
     }
 
     @Override
-    public void addRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow adding refs!");
-    }
-
-    @Override
-    public void removeRef() {
-        throw new IllegalStateException("BufferLeaseStub does not allow removing refs!");
-    }
-
-    @Override
-    public boolean isTerminated() {
-        throw new IllegalStateException("BufferLeaseStub does not have ref count!");
+    public boolean hasZeroRefs() {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not have ref count!");
     }
 
     @Override
     public boolean isStub() {
-        return true;
+        return isStub;
+    }
+
+    @Override
+    public Lease<MemorySegment> sliceAt(final long offset) {
+        throw new IllegalStateException("MemorySegmentLeaseStub does not allow slicing!");
+    }
+
+    @Override
+    public void close() {
+        throw new IllegalStateException("MemorySegmentLeaseStub cannot be closed!");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentLeaseStub that = (MemorySegmentLeaseStub) o;
+        return isStub == that.isStub;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isStub);
     }
 }

@@ -43,27 +43,43 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
-
-import java.nio.ByteBuffer;
+package com.teragrep.buf_01.buffer.lease;
 
 /**
- * BufferContainer is a decorator for {@link ByteBuffer} with an id.
+ * Interface for reference tracking shared resources, such as buffers.
  */
-public interface BufferContainer {
+public interface Lease<T> extends AutoCloseable {
 
     /**
-     * @return id of the buffer
+     * @return id of the leased object
      */
     public abstract long id();
 
     /**
-     * @return encapsulated {@link ByteBuffer}.
+     * @return current reference count
      */
-    public abstract ByteBuffer buffer();
+    public abstract long refs();
+
+    /**
+     * @return encapsulated leased object
+     */
+    public abstract T leasedObject();
+
+    /**
+     * @return status of the lease, {@code true} indicates that the lease has expired.
+     */
+    public abstract boolean hasZeroRefs();
 
     /**
      * @return is this a stub implementation.
      */
     public abstract boolean isStub();
+
+    /**
+     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
+     * 
+     * @param offset start offset
+     * @return slice of the lease, registered as a sublease.
+     */
+    public abstract Lease<T> sliceAt(long offset);
 }

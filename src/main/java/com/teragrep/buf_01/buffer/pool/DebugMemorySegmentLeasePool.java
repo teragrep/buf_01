@@ -43,37 +43,43 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.pool;
 
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
+import com.teragrep.buf_01.buffer.lease.Lease;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
+import com.teragrep.buf_01.buffer.supply.MemorySegmentLeaseSupplier;
+import com.teragrep.poj_01.pool.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 /**
- * Non-blocking pool for {@link BufferContainer} objects. All objects in the pool are {@link ByteBuffer#clear()}ed
- * before returning to the pool by {@link BufferLease}.
+ * Non-blocking pool for {@link MemorySegmentContainer} objects. All objects in the pool are
+ * {@link ByteBuffer#clear()}ed before returning to the pool by {@link Lease}.
  */
-public final class BufferLeasePool {
-    // TODO create tests
+public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<MemorySegment>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BufferLeasePool.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);
 
-    private final Supplier<ByteBuffer> byteBufferSupplier;
+    private final Map<Long, MemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
 
-    private final ConcurrentLinkedQueue<BufferContainer> queue;
+    private final ConcurrentLinkedQueue<PoolableLease<MemorySegment>> queue;
 
-    private final BufferLease bufferLeaseStub;
-    private final BufferContainer bufferContainerStub;
+    private final PoolableLease<MemorySegment> leaseStub;
     private final AtomicBoolean close;
 
     private final int segmentSize;
@@ -82,82 +88,50 @@ public final class BufferLeasePool {
 
     private final Lock lock;
 
-    // TODO check locking pattern, addRef in BufferLease can escape offer's check and cause dirty in pool?
-    public BufferLeasePool() {
+    public DebugMemorySegmentLeasePool() {
         this.segmentSize = 4096;
-        this.byteBufferSupplier = () -> ByteBuffer.allocateDirect(segmentSize); // TODO configurable extents
         this.queue = new ConcurrentLinkedQueue<>();
-        this.bufferLeaseStub = new BufferLeaseStub();
-        this.bufferContainerStub = new BufferContainerStub();
+        this.leaseStub = new MemorySegmentLeaseStub();
         this.close = new AtomicBoolean();
         this.bufferId = new AtomicLong();
         this.lock = new ReentrantLock();
     }
 
-    private BufferLease take() {
-        // get or create
-        BufferContainer bufferContainer = queue.poll();
-        BufferLease bufferLease;
-        if (bufferContainer == null) {
-            // if queue is empty or stub object, create a new BufferContainer and BufferLease.
-            bufferLease = new BufferLeaseImpl(
-                    new BufferContainerImpl(bufferId.incrementAndGet(), byteBufferSupplier.get()),
-                    this
-            );
+    public PoolableLease<MemorySegment> get() {
+        if (close.get()) {
+            return new MemorySegmentLeaseStub();
         }
-        else {
-            // otherwise, wrap bufferContainer with phaser decorator (bufferLease)
-            bufferLease = new BufferLeaseImpl(bufferContainer, this);
+        // get or create
+        PoolableLease<MemorySegment> lease = queue.poll();
+        if (lease == null) {
+            // if queue is empty or stub object, create a new BufferContainer and BufferLease.
+            final MemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
+                    Arena.ofShared(),
+                    segmentSize,
+                    bufferId
+            );
+            lease = supplier.get();
+            suppliers.put(bufferId.get(), supplier);
         }
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER
-                    .debug(
-                            "returning bufferLease id <{}> with refs <{}> at buffer position <{}>", bufferLease.id(),
-                            bufferLease.refs(), bufferLease.buffer().position()
-                    );
+            LOGGER.debug("returning bufferLease id <{}> with refs <{}>", lease.id(), lease.refs());
         }
 
-        if (bufferLease.buffer().position() != 0) {
-            throw new IllegalStateException("Dirty buffer in pool, terminating!");
-        }
-
-        return bufferLease;
-
+        return lease;
     }
 
     /**
-     * @param size minimum size of the {@link BufferLease}s requested.
-     * @return list of {@link BufferLease}s meeting or exceeding the size requested.
-     */
-    public List<BufferLease> take(long size) {
-        if (close.get()) {
-            return Collections.singletonList(bufferLeaseStub);
-        }
-
-        LOGGER.debug("requesting take with size <{}>", size);
-        long currentSize = 0;
-        List<BufferLease> bufferLeases = new LinkedList<>();
-        while (currentSize < size) {
-            BufferLease bufferLease = take();
-            bufferLeases.add(bufferLease);
-            currentSize = currentSize + bufferLease.buffer().capacity();
-
-        }
-        return bufferLeases;
-
-    }
-
-    /**
-     * return {@link BufferContainer} into the pool.
+     * return {@link MemorySegmentContainer} into the pool.
      * 
-     * @param bufferContainer {@link BufferContainer} from {@link BufferLease} which has been
-     *                        {@link ByteBuffer#clear()}ed.
+     * @param lease {@link MemorySegmentContainer} from {@link Lease} which has been {@link ByteBuffer#clear()}ed.
      */
-    void internalOffer(BufferContainer bufferContainer) {
-        // Add buffer back to pool if it is not a stub object
-        if (!bufferContainer.isStub()) {
-            queue.add(bufferContainer);
+    @Override
+    public void offer(PoolableLease<MemorySegment> lease) {
+        // debug pool, instead of returning to pool arena is closed and memorySegment is discarded.
+        if (!lease.isStub()) {
+            MemorySegmentLeaseSupplier supplier = suppliers.get(lease.id());
+            supplier.close(); // closes Arena
         }
 
         if (close.get()) {
@@ -180,24 +154,31 @@ public final class BufferLeasePool {
     }
 
     /**
-     * Closes the {@link BufferLeasePool}, deallocating currently residing {@link BufferContainer}s and future ones when
-     * returned.
+     * Closes the {@link DebugMemorySegmentLeasePool}, deallocating currently residing {@link MemorySegmentContainer}s
+     * and future ones when returned.
      */
     public void close() {
         LOGGER.debug("close called");
         close.set(true);
 
         // close all that are in the pool right now
-        internalOffer(bufferContainerStub);
-
+        offer(leaseStub);
     }
 
-    /**
-     * Estimate the pool size, due to non-blocking nature of the pool, this is only an estimate.
-     * 
-     * @return estimate of the pool size, counting only the residing buffers.
-     */
-    public int estimatedSize() {
-        return queue.size();
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final DebugMemorySegmentLeasePool that = (DebugMemorySegmentLeasePool) o;
+        return segmentSize == that.segmentSize && Objects.equals(suppliers, that.suppliers) && Objects
+                .equals(queue, that.queue) && Objects.equals(leaseStub, that.leaseStub) && Objects
+                        .equals(close, that.close)
+                && Objects.equals(bufferId, that.bufferId) && Objects.equals(lock, that.lock);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(suppliers, queue, leaseStub, close, segmentSize, bufferId, lock);
     }
 }

@@ -43,47 +43,18 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.supply;
 
-import java.nio.ByteBuffer;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 
-/**
- * BufferLease is a decorator for {@link BufferContainer} with reference counter
- */
-public interface BufferLease {
+import java.lang.foreign.MemorySegment;
+import java.util.function.Supplier;
 
-    /**
-     * @return identity of the decorated {@link BufferContainer}.
-     */
-    public abstract long id();
+public interface MemorySegmentLeaseSupplier extends Supplier<PoolableLease<MemorySegment>>, AutoCloseable {
 
-    /**
-     * @return current reference count.
-     */
-    public abstract long refs();
+    @Override
+    PoolableLease<MemorySegment> get();
 
-    /**
-     * @return encapsulated buffer of the {@link BufferContainer}.
-     */
-    public abstract ByteBuffer buffer();
-
-    /**
-     * Add reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void addRef() throws IllegalStateException;
-
-    /**
-     * Remove reference, throws {@link IllegalStateException} if lease has expired.
-     */
-    public abstract void removeRef() throws IllegalStateException;
-
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean isTerminated();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
+    @Override
+    void close();
 }

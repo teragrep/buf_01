@@ -43,31 +43,60 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.container;
 
-import java.nio.ByteBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
- * Stub implementation of the {@link BufferContainer}.
+ * Decorator for {@link MemorySegment} with a synchronized access for it.
  */
-public final class BufferContainerStub implements BufferContainer {
+public final class MemorySegmentContainerImpl implements MemorySegmentContainer {
 
-    public BufferContainerStub() {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemorySegmentContainerImpl.class);
+    private final long id;
+    private final MemorySegment memorySegment;
 
+    public MemorySegmentContainerImpl(long id, MemorySegment memorySegment) {
+        this.id = id;
+        this.memorySegment = memorySegment;
     }
 
     @Override
     public long id() {
-        throw new IllegalStateException("BufferContainerStub does not have an id!");
+        return id;
     }
 
     @Override
-    public ByteBuffer buffer() {
-        throw new IllegalStateException("BufferContainerStub does not allow access to the buffer!");
+    public MemorySegment memorySegment() {
+        return memorySegment;
+    }
+
+    @Override
+    public String toString() {
+        return "BufferContainer{" + "buffer=" + memorySegment + ", id=" + id + '}';
     }
 
     @Override
     public boolean isStub() {
-        return true;
+        LOGGER.debug("id <{}>", id);
+        return false;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MemorySegmentContainerImpl that = (MemorySegmentContainerImpl) o;
+        return id == that.id && Objects.equals(memorySegment, that.memorySegment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, memorySegment);
     }
 }
