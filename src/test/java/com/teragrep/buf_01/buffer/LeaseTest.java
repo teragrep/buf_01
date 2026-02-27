@@ -183,6 +183,25 @@ final class LeaseTest {
     }
 
     @Test
+    void testCannotOpenLeaseTwice() {
+        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
+                new PoolFake()
+        );
+
+        // refs starts at 0
+        Assertions.assertEquals(0L, lease.refs());
+
+        // open, then refs=1
+        lease.open();
+        Assertions.assertEquals(1L, lease.refs());
+
+        // try opening again, should throw an exception and not change ref count
+        Assertions.assertThrows(IllegalStateException.class, lease::open);
+        Assertions.assertEquals(1L, lease.refs());
+    }
+
+    @Test
     void testEqualsContractForParentLease() {
         EqualsVerifier
                 .forClass(MemorySegmentLease.class)
