@@ -62,64 +62,61 @@ final class LeasePoolTest {
 
     @Test
     void testPool() {
-        try (
-                final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
-                        Arena.ofShared(),
-                        4096
-                )
-        ) {
+        Assertions.assertDoesNotThrow(() -> {
             try (
-                    final UnboundPool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
-                            supplier,
-                            new MemorySegmentLeaseStub()
+                    final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
+                            Arena.ofShared(),
+                            4096
                     )
             ) {
-                final PoolableLease<MemorySegment> leaseRef;
-                try (final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get()) {
-                    leaseRef = lease;
-                    Assertions.assertFalse(lease.isStub());
+                try (
+                        final UnboundPool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
+                                supplier,
+                                new MemorySegmentLeaseStub()
+                        )
+                ) {
+                    final PoolableLease<MemorySegment> leaseRef;
+                    try (final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get()) {
+                        leaseRef = lease;
+                        Assertions.assertFalse(lease.isStub());
 
-                    Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
+                        Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
 
-                    Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
+                        Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-                    final Lease<MemorySegment> sliceRef;
-                    try (final Lease<MemorySegment> slice = lease.sliceAt(2)) {
-                        sliceRef = slice;
-                        Assertions.assertEquals(2, lease.refs());
+                        final Lease<MemorySegment> sliceRef;
+                        try (final Lease<MemorySegment> slice = lease.sliceAt(2)) {
+                            sliceRef = slice;
+                            Assertions.assertEquals(2, lease.refs());
 
-                        lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
+                            lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
 
-                        Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
+                            Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
 
-                        Assertions.assertEquals(2, lease.refs());
+                            Assertions.assertEquals(2, lease.refs());
 
-                        Assertions.assertEquals(1, slice.refs());
+                            Assertions.assertEquals(1, slice.refs());
+                        }
+
+                        Assertions.assertEquals(0, sliceRef.refs());
+
+                        Assertions.assertTrue(sliceRef.hasZeroRefs());
+
+                        Assertions.assertThrows(IllegalStateException.class, sliceRef::leasedObject);
+
+                        Assertions.assertFalse(lease.hasZeroRefs());
+
+                        Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
                     }
 
-                    Assertions.assertEquals(0, sliceRef.refs());
+                    Assertions.assertTrue(leaseRef.hasZeroRefs()); // lease closed
 
-                    Assertions.assertTrue(sliceRef.hasZeroRefs());
+                    Assertions.assertEquals(0, leaseRef.refs()); // lease closed, refs=0
 
-                    Assertions.assertThrows(IllegalStateException.class, sliceRef::leasedObject);
-
-                    Assertions.assertFalse(lease.hasZeroRefs());
-
-                    Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
+                    Assertions.assertThrows(IllegalStateException.class, leaseRef::leasedObject);
                 }
-
-                Assertions.assertTrue(leaseRef.hasZeroRefs()); // lease closed
-
-                Assertions.assertEquals(0, leaseRef.refs()); // lease closed, refs=0
-
-                Assertions.assertThrows(IllegalStateException.class, leaseRef::leasedObject);
             }
-            catch (final Exception e) {
-                // Does not seem like Assertions.assertDoesNotThrow(...) can be used with try-with-resources
-                Assertions.fail(e);
-            }
-        }
-
+        });
     }
 
     @Test
