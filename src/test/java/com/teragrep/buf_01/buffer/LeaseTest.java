@@ -183,11 +183,15 @@ final class LeaseTest {
     }
 
     @Test
-    void testEqualsContract() {
+    void testEqualsContractForParentLease() {
         EqualsVerifier
                 .forClass(MemorySegmentLease.class)
                 .withPrefabValues(Phaser.class, new Phaser(1), new Phaser(1))
                 .verify();
+    }
+
+    @Test
+    void testEqualsContractForSubLease() {
         EqualsVerifier
                 .forClass(MemorySegmentSubLease.class)
                 .withPrefabValues(Phaser.class, new Phaser(1), new Phaser(1))
