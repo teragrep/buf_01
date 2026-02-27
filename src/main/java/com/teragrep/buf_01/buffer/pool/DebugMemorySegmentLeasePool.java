@@ -50,7 +50,6 @@ import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
-import com.teragrep.buf_01.buffer.supply.MemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +74,7 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);
 
-    private final Map<Long, MemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
+    private final Map<Long, ArenaMemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
 
     private final ConcurrentLinkedQueue<PoolableLease<MemorySegment>> queue;
 
@@ -105,12 +104,12 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
         PoolableLease<MemorySegment> lease = queue.poll();
         if (lease == null) {
             // if queue is empty or stub object, create a new BufferContainer and BufferLease.
-            final MemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
+            final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
                     Arena.ofShared(),
                     segmentSize,
                     bufferId
             );
-            lease = supplier.get();
+            lease = supplier.apply(this);
             suppliers.put(bufferId.get(), supplier);
         }
 
@@ -130,7 +129,7 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
     public void offer(PoolableLease<MemorySegment> lease) {
         // debug pool, instead of returning to pool arena is closed and memorySegment is discarded.
         if (!lease.isStub()) {
-            MemorySegmentLeaseSupplier supplier = suppliers.get(lease.id());
+            final ArenaMemorySegmentLeaseSupplier supplier = suppliers.get(lease.id());
             supplier.close(); // closes Arena
         }
 

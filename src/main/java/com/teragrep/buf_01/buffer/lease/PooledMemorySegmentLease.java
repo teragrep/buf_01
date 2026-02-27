@@ -43,18 +43,74 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.supply;
+package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.poj_01.pool.Pool;
 
+import java.io.IOException;
 import java.lang.foreign.MemorySegment;
-import java.util.function.Supplier;
+import java.util.Objects;
 
-public interface MemorySegmentLeaseSupplier extends Supplier<PoolableLease<MemorySegment>>, AutoCloseable {
+public final class PooledMemorySegmentLease implements PoolableLease<MemorySegment> {
+
+    private final PoolableLease<MemorySegment> origin;
+    private final Pool<PoolableLease<MemorySegment>> pool;
+
+    public PooledMemorySegmentLease(
+            final PoolableLease<MemorySegment> origin,
+            final Pool<PoolableLease<MemorySegment>> pool
+    ) {
+        this.origin = origin;
+        this.pool = pool;
+    }
 
     @Override
-    PoolableLease<MemorySegment> get();
+    public long id() {
+        return origin.id();
+    }
 
     @Override
-    void close();
+    public long refs() {
+        return origin.refs();
+    }
+
+    @Override
+    public MemorySegment leasedObject() {
+        return origin.leasedObject();
+    }
+
+    @Override
+    public boolean hasZeroRefs() {
+        return origin.hasZeroRefs();
+    }
+
+    @Override
+    public boolean isStub() {
+        return origin.isStub();
+    }
+
+    @Override
+    public Lease<MemorySegment> sliceAt(final long offset) {
+        return origin.sliceAt(offset);
+    }
+
+    @Override
+    public void close() throws IOException {
+        origin.close();
+        pool.offer(origin);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PooledMemorySegmentLease that = (PooledMemorySegmentLease) o;
+        return Objects.equals(origin, that.origin) && Objects.equals(pool, that.pool);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origin, pool);
+    }
 }

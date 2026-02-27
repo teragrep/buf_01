@@ -62,42 +62,63 @@ final class LeasePoolTest {
 
     @Test
     void testPool() {
-        final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
-                new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096),
-                new MemorySegmentLeaseStub()
-        );
+        try (
+                final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
+                        Arena.ofShared(),
+                        4096
+                )
+        ) {
+            try (
+                    final UnboundPool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
+                            supplier,
+                            new MemorySegmentLeaseStub()
+                    )
+            ) {
+                final PoolableLease<MemorySegment> leaseRef;
+                try (final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get()) {
+                    leaseRef = lease;
+                    Assertions.assertFalse(lease.isStub());
 
-        final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
+                    Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
 
-        Assertions.assertFalse(lease.isStub());
+                    Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
 
-        Assertions.assertFalse(lease.hasZeroRefs()); // initially 1 refs
+                    final Lease<MemorySegment> sliceRef;
+                    try (final Lease<MemorySegment> slice = lease.sliceAt(2)) {
+                        sliceRef = slice;
+                        Assertions.assertEquals(2, lease.refs());
 
-        Assertions.assertEquals(1, lease.refs()); // check initial 1 ref
+                        lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
 
-        final Lease<MemorySegment> slice = lease.sliceAt(2);
+                        Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
 
-        Assertions.assertEquals(2, lease.refs());
+                        Assertions.assertEquals(2, lease.refs());
 
-        lease.leasedObject().set(ValueLayout.JAVA_BYTE, 0, (byte) 'x');
+                        Assertions.assertEquals(1, slice.refs());
+                    }
 
-        Assertions.assertEquals((byte) 'x', lease.leasedObject().get(ValueLayout.JAVA_BYTE, 0));
+                    Assertions.assertEquals(0, sliceRef.refs());
 
-        Assertions.assertEquals(2, lease.refs());
+                    Assertions.assertTrue(sliceRef.hasZeroRefs());
 
-        Assertions.assertDoesNotThrow(slice::close);
+                    Assertions.assertThrows(IllegalStateException.class, sliceRef::leasedObject);
 
-        Assertions.assertFalse(lease.hasZeroRefs()); // initial ref must be still in place
+                    Assertions.assertFalse(lease.hasZeroRefs());
 
-        Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
+                    Assertions.assertEquals(1, lease.refs()); // initial ref must be still in
+                }
 
-        Assertions.assertFalse(lease.hasZeroRefs()); // main lease is not terminated, allows reuse
+                Assertions.assertTrue(leaseRef.hasZeroRefs()); // lease closed
 
-        memorySegmentLeasePool.offer(lease);
+                Assertions.assertEquals(0, leaseRef.refs()); // lease closed, refs=0
 
-        memorySegmentLeasePool.close();
-
-        Assertions.assertThrows(IllegalStateException.class, lease::leasedObject);
+                Assertions.assertThrows(IllegalStateException.class, leaseRef::leasedObject);
+            }
+            catch (final Exception e) {
+                // Does not seem like Assertions.assertDoesNotThrow(...) can be used with try-with-resources
+                Assertions.fail(e);
+            }
+        }
 
     }
 
