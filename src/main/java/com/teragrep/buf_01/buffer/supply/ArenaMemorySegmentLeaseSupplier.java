@@ -48,7 +48,6 @@ package com.teragrep.buf_01.buffer.supply;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
-import com.teragrep.buf_01.buffer.lease.PooledMemorySegmentLease;
 import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.PoolableSupplier;
 
@@ -82,12 +81,10 @@ public final class ArenaMemorySegmentLeaseSupplier
 
     @Override
     public synchronized PoolableLease<MemorySegment> apply(final Pool<PoolableLease<MemorySegment>> poolRef) {
-        return new PooledMemorySegmentLease(
-                new MemorySegmentLease(
-                        new MemorySegmentContainerImpl(
-                                bufferId.incrementAndGet(),
-                                arena.allocate(ValueLayout.JAVA_BYTE, blockSize)
-                        )
+        return new MemorySegmentLease(
+                new MemorySegmentContainerImpl(
+                        bufferId.incrementAndGet(),
+                        arena.allocate(ValueLayout.JAVA_BYTE, blockSize)
                 ),
                 poolRef
         );

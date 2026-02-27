@@ -43,15 +43,9 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.lease;
+package com.teragrep.buf_01.buffer;
 
-import com.teragrep.buf_01.buffer.Openable;
-import com.teragrep.poj_01.pool.Poolable;
+public interface Openable {
 
-/**
- * Generic Lease type for leases which are to be returned to a Pool.
- * 
- * @param <T> Type for the generic class {@link Lease}
- */
-public interface PoolableLease<T> extends Lease<T>, Poolable, Openable {
+    public abstract void open();
 }

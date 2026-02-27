@@ -49,6 +49,7 @@ import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease;
+import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -61,11 +62,16 @@ final class LeaseTest {
 
     @Test
     void testOneLease() {
-        final Lease<MemorySegment> rootLease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
+        final PoolableLease<MemorySegment> rootLease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
+                new PoolFake()
         );
 
-        // refs starts at 1
+        // refs starts at 0
+        Assertions.assertEquals(0L, rootLease.refs());
+
+        // open, then refs=1
+        rootLease.open();
         Assertions.assertEquals(1L, rootLease.refs());
         Assertions.assertFalse(rootLease.hasZeroRefs());
 
@@ -84,11 +90,16 @@ final class LeaseTest {
 
     @Test
     void testSubLeaseCreateAndRemove() {
-        final Lease<MemorySegment> rootLease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
+        final PoolableLease<MemorySegment> rootLease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
+                new PoolFake()
         );
 
-        // refs starts at 1
+        // refs starts at 0
+        Assertions.assertEquals(0L, rootLease.refs());
+
+        // open, then refs=1
+        rootLease.open();
         Assertions.assertEquals(1L, rootLease.refs());
         Assertions.assertFalse(rootLease.hasZeroRefs());
 
@@ -107,11 +118,16 @@ final class LeaseTest {
 
     @Test
     void testSubLeaseCreateAndRemoveParentRefs() {
-        final Lease<MemorySegment> lease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
+        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
+                new PoolFake()
         );
 
-        // refs starts at 1
+        // refs starts at 0
+        Assertions.assertEquals(0L, lease.refs());
+
+        // open, then refs=1
+        lease.open();
         Assertions.assertEquals(1L, lease.refs());
         Assertions.assertFalse(lease.hasZeroRefs());
 
@@ -136,11 +152,16 @@ final class LeaseTest {
 
     @Test
     void testCloseParentLeaseWithSlice() {
-        final Lease<MemorySegment> lease = new MemorySegmentLease(
-                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024)))
+        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+                new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
+                new PoolFake()
         );
 
-        // refs starts at 1
+        // refs starts at 0
+        Assertions.assertEquals(0L, lease.refs());
+
+        // open, then refs=1
+        lease.open();
         Assertions.assertEquals(1L, lease.refs());
         Assertions.assertFalse(lease.hasZeroRefs());
 

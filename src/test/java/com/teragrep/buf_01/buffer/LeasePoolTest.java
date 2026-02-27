@@ -48,8 +48,8 @@ package com.teragrep.buf_01.buffer;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
-import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.UnboundPool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -70,9 +70,8 @@ final class LeasePoolTest {
                     )
             ) {
                 try (
-                        final UnboundPool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
-                                supplier,
-                                new MemorySegmentLeaseStub()
+                        final OpeningPool memorySegmentLeasePool = new OpeningPool(
+                                new UnboundPool<>(supplier, new MemorySegmentLeaseStub())
                         )
                 ) {
                     final PoolableLease<MemorySegment> leaseRef;
@@ -122,20 +121,22 @@ final class LeasePoolTest {
     @Test
     void testReturnsTheSameInstance() {
         try (
-                final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new UnboundPool<>(
-                        new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096),
-                        new MemorySegmentLeaseStub()
+                final OpeningPool memorySegmentLeasePool = new OpeningPool(
+                        new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096), new MemorySegmentLeaseStub())
                 )
         ) {
             final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
-
-            memorySegmentLeasePool.offer(lease);
+            Assertions.assertEquals(1L, lease.refs());
+            Assertions.assertDoesNotThrow(lease::close);
+            Assertions.assertEquals(0L, lease.refs());
 
             final PoolableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
-
-            memorySegmentLeasePool.offer(lease2);
+            Assertions.assertEquals(1L, lease2.refs());
+            Assertions.assertDoesNotThrow(lease2::close);
+            Assertions.assertEquals(0L, lease2.refs());
 
             Assertions.assertEquals(lease, lease2);
+            Assertions.assertSame(lease, lease2);
         }
     }
 }

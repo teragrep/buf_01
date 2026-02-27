@@ -47,6 +47,7 @@ package com.teragrep.buf_01.buffer.lease;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
@@ -61,11 +62,13 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
+    private final Pool<PoolableLease<MemorySegment>> pool;
 
-    public MemorySegmentLease(MemorySegmentContainer bc) {
+    public MemorySegmentLease(MemorySegmentContainer bc, Pool<PoolableLease<MemorySegment>> pool) {
         this.memorySegmentContainer = bc;
-        // initial registered parties set to 1
-        this.phaser = new NonTerminatingPhaser(1);
+        // initial registered parties set to 0, to be opened with open() before using
+        this.phaser = new NonTerminatingPhaser(0);
+        this.pool = pool;
     }
 
     @Override
@@ -124,6 +127,8 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
         if (phaser.arriveAndDeregister() < 0) {
             throw new IllegalStateException("Cannot close lease, MemorySegmentLease phaser was already terminated!");
         }
+
+        pool.offer(this);
     }
 
     @Override
@@ -133,11 +138,21 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
         }
         final MemorySegmentLease that = (MemorySegmentLease) o;
         return Objects.equals(memorySegmentContainer, that.memorySegmentContainer)
-                && Objects.equals(phaser, that.phaser);
+                && Objects.equals(phaser, that.phaser) && Objects.equals(pool, that.pool);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(memorySegmentContainer, phaser);
+        return Objects.hash(memorySegmentContainer, phaser, pool);
+    }
+
+    @Override
+    public void open() {
+        if (phaser.getRegisteredParties() == 0) {
+            phaser.register();
+        }
+        else {
+            throw new IllegalStateException("Cannot re-open an open lease!");
+        }
     }
 }

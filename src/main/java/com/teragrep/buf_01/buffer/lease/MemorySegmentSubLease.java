@@ -65,7 +65,7 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     public MemorySegmentSubLease(MemorySegmentContainer bc, Phaser parent) {
         this.memorySegmentContainer = bc;
-        // initial registered parties set to 1
+        // initial registered parties set to 1 as subleases are not returned to the pool and can't be opened.
         this.phaser = new NonTerminatingPhaser(parent, 1);
     }
 

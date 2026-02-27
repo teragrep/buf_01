@@ -111,4 +111,9 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
     public int hashCode() {
         return Objects.hashCode(isStub);
     }
+
+    @Override
+    public void open() {
+        throw new IllegalStateException("MemorySegmentLeaseStub cannot be opened!");
+    }
 }

@@ -52,7 +52,7 @@ import java.lang.foreign.MemorySegment;
 
 void example() {
     try (final PoolableSupplier<Pool<PoolableLease<MemorySegment>>, PoolableLease<MemorySegment>> poolableSupplier = new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 1024)) {
-        try (final Pool<PoolableLease<MemorySegment>> leasePool = new UnboundPool<>(poolableSupplier, new MemorySegmentLeaseStub())) {
+        try (final Pool<PoolableLease<MemorySegment>> leasePool = new OpeningPool(new UnboundPool<>(poolableSupplier, new MemorySegmentLeaseStub()))) {
             try (final PoolableLease<MemorySegment> lease = leasePool.get()) {
                 final MemorySegment memorySegment = lease.leasedObject();
             }
