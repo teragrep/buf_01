@@ -17,7 +17,7 @@ A library for providing leased access to Java MemorySegments.
 - Pool consists of Parent leases.
 - Each parent lease can be sliced from offset to end into a sub lease.
 - Sub leases cannot be pooled, but they can be close()'d.
-- Parent lease must be returned to the pool by the same entity who took it from the pool.
+- Parent lease will be returned to the pool by calling the close() method.
 - All subleases must be closed before the parent lease can be returned to the pool.
 - The parent lease will fill the underlying MemorySegment with zeroes when returned to the pool.
 - In order to retrieve n bytes worth of MemorySegments, the included LeaseMultiGet object can be used. The pool itself will provide the first one from the inner queue data structure.
