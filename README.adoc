@@ -17,7 +17,7 @@ A library for providing leased access to Java MemorySegments.
 - Pool consists of Parent leases.
 - Each parent lease can be sliced from offset to end into a sub lease.
 - Sub leases cannot be pooled, but they can be close()'d.
-- Parent lease must be returned to the pool by the same entity who took it from the pool.
+- Parent lease will be returned to the pool by calling the close() method.
 - All subleases must be closed before the parent lease can be returned to the pool.
 - The parent lease will fill the underlying MemorySegment with zeroes when returned to the pool.
 - In order to retrieve n bytes worth of MemorySegments, the included LeaseMultiGet object can be used. The pool itself will provide the first one from the inner queue data structure.
@@ -39,7 +39,7 @@ JAVA_HOME=/usr/lib/jvm/temurin-25-jdk mvn clean package
 
 == How to use
 
-A MemorySegment can be taken from the Pool in the following manner:
+A MemorySegment can be taken from the Pool in the following manner, using try-with-resources to automate closing the resources:
 
 [source,java]
 ----
@@ -50,27 +50,32 @@ import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.UnboundPool;
 import java.lang.foreign.MemorySegment;
 
-final Pool<PoolableLease<MemorySegment>> leasePool = new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 1024), new MemorySegmentLeaseStub());
-final PoolableLease<MemorySegment> lease = leasePool.get();
-final MemorySegment memorySegment = lease.leasedObject();
+void example() {
+    try (final PoolableSupplier<Pool<PoolableLease<MemorySegment>>, PoolableLease<MemorySegment>> poolableSupplier = new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 1024)) {
+        try (final Pool<PoolableLease<MemorySegment>> leasePool = new OpeningPool(new UnboundPool<>(poolableSupplier, new MemorySegmentLeaseStub()))) {
+            try (final PoolableLease<MemorySegment> lease = leasePool.get()) {
+                final MemorySegment memorySegment = lease.leasedObject();
+            }
+        }
+    }
+}
 ----
 
 It can also be sliced, and used like another MemorySegment:
-Remember to close the slice after it is no longer needed.
+Remember to close the slice after it is no longer needed or preferably use try-with-resources.
 
 [source,java]
 ----
 import java.lang.foreign.MemorySegment;
-final Lease<MemorySegment> slice = lease.sliced(512);
-slice.close();
+void example() {
+    try (final Lease<MemorySegment> slice = lease.sliced(512)) {
+        final MemorySegment memorySegment = slice.leasedObject();
+    }
+}
 ----
 
-After all slices have been closed and the parent MemorySegment is no longer of use:
-
-[source,java]
-----
-pool.offer(lease);
-----
+After all slices have been closed and the parent MemorySegment is no longer of use, the parent lease will be
+returned to the pool automatically if using try-with-resources or manually via the close() method.
 
 == Contributing
 

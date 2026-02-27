@@ -43,18 +43,29 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.supply;
+package com.teragrep.buf_01.buffer;
 
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
-import java.util.function.Supplier;
 
-public interface MemorySegmentLeaseSupplier extends Supplier<PoolableLease<MemorySegment>>, AutoCloseable {
-
-    @Override
-    PoolableLease<MemorySegment> get();
+public final class PoolFake implements Pool<PoolableLease<MemorySegment>> {
 
     @Override
-    void close();
+    public PoolableLease<MemorySegment> get() {
+        return new MemorySegmentLease(new MemorySegmentContainerImpl(0, MemorySegment.ofArray(new byte[50])), this);
+    }
+
+    @Override
+    public void offer(final PoolableLease<MemorySegment> memorySegmentPoolableLease) {
+        // no-op
+    }
+
+    @Override
+    public void close() {
+        // no-op
+    }
 }
