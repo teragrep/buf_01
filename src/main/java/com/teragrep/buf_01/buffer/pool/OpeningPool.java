@@ -49,6 +49,7 @@ import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 public final class OpeningPool implements Pool<PoolableLease<MemorySegment>> {
 
@@ -75,5 +76,19 @@ public final class OpeningPool implements Pool<PoolableLease<MemorySegment>> {
     @Override
     public void close() {
         origin.close();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final OpeningPool that = (OpeningPool) o;
+        return Objects.equals(origin, that.origin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(origin);
     }
 }

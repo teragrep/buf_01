@@ -51,6 +51,7 @@ import com.teragrep.buf_01.buffer.lease.PoolableLease;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.UnboundPool;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -138,5 +139,10 @@ final class LeasePoolTest {
             Assertions.assertEquals(lease, lease2);
             Assertions.assertSame(lease, lease2);
         }
+    }
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(OpeningPool.class).verify();
     }
 }
