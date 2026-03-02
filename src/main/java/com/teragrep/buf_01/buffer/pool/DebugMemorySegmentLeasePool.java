@@ -105,10 +105,10 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
         final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
                 Arena.ofShared(),
                 segmentSize,
-                bufferId
+                bufferId.get()
         );
         final PoolableLease<MemorySegment> lease = supplier.apply(this);
-        suppliers.put(bufferId.get(), supplier);
+        suppliers.put(bufferId.incrementAndGet(), supplier);
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("returning bufferLease id <{}> with refs <{}>", lease.id(), lease.refs());

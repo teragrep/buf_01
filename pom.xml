@@ -273,6 +273,8 @@
             <exclude>.flattened-pom.xml</exclude>
             <exclude>pom.xml</exclude>
             <exclude>eclipse-java-formatter.xml</exclude>
+            <!-- spotbugs -->
+            <exclude>spotbugs-exclude-filter.xml</exclude>
             <!-- readme -->
             <exclude>README.adoc</exclude>
           </excludes>
@@ -503,6 +505,7 @@
           <failThreshold>Low</failThreshold>
           <failOnError>true</failOnError>
           <includeTests>true</includeTests>
+          <excludeFilterFile>${project.basedir}/spotbugs-exclude-filter.xml</excludeFilterFile>
         </configuration>
         <executions>
           <execution>
@@ -516,7 +519,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
+        <version>0.8.14</version>
         <executions>
           <execution>
             <goals>

@@ -145,9 +145,7 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     @Override
     public String toString() {
-        return "MemorySegmentSubLease{" +
-                "memorySegmentContainer=" + memorySegmentContainer +
-                ", phaser=" + phaser +
-                '}';
+        return "MemorySegmentSubLease{" + "memorySegmentContainer=" + memorySegmentContainer + ", phaser=" + phaser
+                + '}';
     }
 }

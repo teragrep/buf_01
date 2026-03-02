@@ -65,10 +65,14 @@ public final class ArenaMemorySegmentLeaseSupplier
     private final AtomicLong bufferId;
 
     public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize) {
-        this(arena, blockSize, new AtomicLong(0L));
+        this(arena, blockSize, 0L);
     }
 
-    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize, final AtomicLong bufferId) {
+    public ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize, final long initialValue) {
+        this(arena, blockSize, new AtomicLong(initialValue));
+    }
+
+    private ArenaMemorySegmentLeaseSupplier(final Arena arena, final long blockSize, final AtomicLong bufferId) {
         this.arena = arena;
         this.blockSize = blockSize;
         this.bufferId = bufferId;

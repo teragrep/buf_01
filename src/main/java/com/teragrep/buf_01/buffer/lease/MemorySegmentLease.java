@@ -158,10 +158,7 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
 
     @Override
     public String toString() {
-        return "MemorySegmentLease{" +
-                "memorySegmentContainer=" + memorySegmentContainer +
-                ", phaser=" + phaser +
-                ", pool=" + pool +
-                '}';
+        return "MemorySegmentLease{" + "memorySegmentContainer=" + memorySegmentContainer + ", phaser=" + phaser
+                + ", pool=" + pool + '}';
     }
 }
