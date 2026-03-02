@@ -495,8 +495,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <!-- Version 4.8.6.6 is currently last java 8 compatible release -->
-        <version>4.8.6.6</version>
+        <version>4.9.8.2</version>
         <configuration>
           <!-- Default configuration -->
           <xmlOutput>true</xmlOutput>
