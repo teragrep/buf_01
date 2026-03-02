@@ -77,7 +77,10 @@ public final class MemorySegmentContainerImpl implements MemorySegmentContainer 
 
     @Override
     public String toString() {
-        return "BufferContainer{" + "buffer=" + memorySegment + ", id=" + id + '}';
+        return "MemorySegmentContainerImpl{" +
+                "id=" + id +
+                ", memorySegment=" + memorySegment +
+                '}';
     }
 
     @Override

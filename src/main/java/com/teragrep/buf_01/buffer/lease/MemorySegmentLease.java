@@ -155,4 +155,13 @@ public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
             throw new IllegalStateException("Cannot re-open an open lease!");
         }
     }
+
+    @Override
+    public String toString() {
+        return "MemorySegmentLease{" +
+                "memorySegmentContainer=" + memorySegmentContainer +
+                ", phaser=" + phaser +
+                ", pool=" + pool +
+                '}';
+    }
 }

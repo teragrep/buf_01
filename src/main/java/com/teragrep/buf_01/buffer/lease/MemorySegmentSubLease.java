@@ -142,4 +142,12 @@ public final class MemorySegmentSubLease implements Lease<MemorySegment> {
     public int hashCode() {
         return Objects.hash(memorySegmentContainer, phaser);
     }
+
+    @Override
+    public String toString() {
+        return "MemorySegmentSubLease{" +
+                "memorySegmentContainer=" + memorySegmentContainer +
+                ", phaser=" + phaser +
+                '}';
+    }
 }
