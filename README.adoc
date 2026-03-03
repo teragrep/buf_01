@@ -68,7 +68,7 @@ Remember to close the slice after it is no longer needed or preferably use try-w
 ----
 import java.lang.foreign.MemorySegment;
 void example() {
-    try (final Lease<MemorySegment> slice = lease.sliced(512)) {
+    try (final Lease<MemorySegment> slice = lease.sliceAt(512)) {
         final MemorySegment memorySegment = slice.leasedObject();
     }
 }
