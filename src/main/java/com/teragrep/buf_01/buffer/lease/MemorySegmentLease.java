@@ -58,13 +58,13 @@ import java.util.concurrent.Phaser;
  * Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track reference count in a
  * non-blocking way.
  */
-public final class MemorySegmentLease implements PoolableLease<MemorySegment> {
+public final class MemorySegmentLease implements OpenableLease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;
     private final Phaser phaser;
-    private final Pool<PoolableLease<MemorySegment>> pool;
+    private final Pool<OpenableLease<MemorySegment>> pool;
 
-    public MemorySegmentLease(MemorySegmentContainer bc, Pool<PoolableLease<MemorySegment>> pool) {
+    public MemorySegmentLease(MemorySegmentContainer bc, Pool<OpenableLease<MemorySegment>> pool) {
         this.memorySegmentContainer = bc;
         // initial registered parties set to 0, to be opened with open() before using
         this.phaser = new NonTerminatingPhaser(0);

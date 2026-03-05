@@ -46,7 +46,7 @@
 package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
 import com.teragrep.buf_01.buffer.pool.MultiGet;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
@@ -67,11 +67,11 @@ final class LeaseMultiGetTest {
     @Test
     @DisplayName(value = "Supplies segments with size=5, take 5 bytes. Results in 1x5 bytes buffer.")
     void testTakeOneLease() {
-        final Pool<PoolableLease<MemorySegment>> pool = new OpeningPool(
+        final Pool<OpenableLease<MemorySegment>> pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final MultiGet<PoolableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
-        final List<PoolableLease<MemorySegment>> leases = multiGet.get(5);
+        final MultiGet<OpenableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
+        final List<OpenableLease<MemorySegment>> leases = multiGet.get(5);
 
         Assertions.assertEquals(1, leases.size());
         Assertions.assertEquals(5, leases.getFirst().leasedObject().byteSize());
@@ -80,11 +80,11 @@ final class LeaseMultiGetTest {
     @Test
     @DisplayName(value = "Supplies segments with size=3, take 5 bytes. Results in 2x3 bytes buffers.")
     void testTakeTwoLeases() {
-        final Pool<PoolableLease<MemorySegment>> pool = new OpeningPool(
+        final Pool<OpenableLease<MemorySegment>> pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 3), new MemorySegmentLeaseStub())
         );
-        final MultiGet<PoolableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
-        final List<PoolableLease<MemorySegment>> leases = multiGet.get(5);
+        final MultiGet<OpenableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
+        final List<OpenableLease<MemorySegment>> leases = multiGet.get(5);
 
         Assertions.assertEquals(2, leases.size());
         Assertions.assertEquals(3, leases.getFirst().leasedObject().byteSize());
@@ -94,11 +94,11 @@ final class LeaseMultiGetTest {
     @Test
     @DisplayName(value = "Supplies segments with size=3, take 10 bytes. Results in 4x3 bytes buffers.")
     void testTakeFourLeases() {
-        final Pool<PoolableLease<MemorySegment>> pool = new OpeningPool(
+        final Pool<OpenableLease<MemorySegment>> pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 3), new MemorySegmentLeaseStub())
         );
-        final MultiGet<PoolableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
-        final List<PoolableLease<MemorySegment>> leases = multiGet.get(10);
+        final MultiGet<OpenableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
+        final List<OpenableLease<MemorySegment>> leases = multiGet.get(10);
 
         Assertions.assertEquals(4, leases.size());
         Assertions.assertEquals(4, leases.stream().filter(l -> 3 == l.leasedObject().byteSize()).count());
@@ -107,11 +107,11 @@ final class LeaseMultiGetTest {
     @Test
     @DisplayName(value = "Supplies segments with size=3, take 0 bytes. Results in no buffers.")
     void testTakeZeroLeases() {
-        final Pool<PoolableLease<MemorySegment>> pool = new OpeningPool(
+        final Pool<OpenableLease<MemorySegment>> pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 3), new MemorySegmentLeaseStub())
         );
-        final MultiGet<PoolableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
-        final List<PoolableLease<MemorySegment>> leases = multiGet.get(0);
+        final MultiGet<OpenableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
+        final List<OpenableLease<MemorySegment>> leases = multiGet.get(0);
 
         Assertions.assertEquals(0, leases.size());
     }

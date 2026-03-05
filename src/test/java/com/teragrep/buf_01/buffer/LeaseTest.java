@@ -49,7 +49,7 @@ import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ final class LeaseTest {
 
     @Test
     void testOneLease() {
-        final PoolableLease<MemorySegment> rootLease = new MemorySegmentLease(
+        final OpenableLease<MemorySegment> rootLease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new PoolFake()
         );
@@ -90,7 +90,7 @@ final class LeaseTest {
 
     @Test
     void testSubLeaseCreateAndRemove() {
-        final PoolableLease<MemorySegment> rootLease = new MemorySegmentLease(
+        final OpenableLease<MemorySegment> rootLease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new PoolFake()
         );
@@ -118,7 +118,7 @@ final class LeaseTest {
 
     @Test
     void testSubLeaseCreateAndRemoveParentRefs() {
-        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+        final OpenableLease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new PoolFake()
         );
@@ -152,7 +152,7 @@ final class LeaseTest {
 
     @Test
     void testCloseParentLeaseWithSlice() {
-        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+        final OpenableLease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new PoolFake()
         );
@@ -184,7 +184,7 @@ final class LeaseTest {
 
     @Test
     void testCannotOpenLeaseTwice() {
-        final PoolableLease<MemorySegment> lease = new MemorySegmentLease(
+        final OpenableLease<MemorySegment> lease = new MemorySegmentLease(
                 new MemorySegmentContainerImpl(0L, MemorySegment.ofBuffer(ByteBuffer.allocateDirect(1024))),
                 new PoolFake()
         );

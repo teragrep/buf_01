@@ -47,20 +47,20 @@ package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
 
-public final class PoolFake implements Pool<PoolableLease<MemorySegment>> {
+public final class PoolFake implements Pool<OpenableLease<MemorySegment>> {
 
     @Override
-    public PoolableLease<MemorySegment> get() {
+    public OpenableLease<MemorySegment> get() {
         return new MemorySegmentLease(new MemorySegmentContainerImpl(0, MemorySegment.ofArray(new byte[50])), this);
     }
 
     @Override
-    public void offer(final PoolableLease<MemorySegment> memorySegmentPoolableLease) {
+    public void offer(final OpenableLease<MemorySegment> memorySegmentOpenableLease) {
         // no-op
     }
 

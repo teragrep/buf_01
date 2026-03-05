@@ -46,7 +46,7 @@
 package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.lease.Lease;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.pool.DebugMemorySegmentLeasePool;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.poj_01.pool.Pool;
@@ -61,7 +61,7 @@ final class DebugLeasePoolTest {
 
     @Test
     void testPool() {
-        final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new OpeningPool(
+        final Pool<OpenableLease<MemorySegment>> memorySegmentLeasePool = new OpeningPool(
                 new DebugMemorySegmentLeasePool()
         );
 
@@ -101,16 +101,16 @@ final class DebugLeasePoolTest {
     @Test
     void testDoesNotReturnTheSameInstance() {
         try (
-                final Pool<PoolableLease<MemorySegment>> memorySegmentLeasePool = new OpeningPool(
+                final Pool<OpenableLease<MemorySegment>> memorySegmentLeasePool = new OpeningPool(
                         new DebugMemorySegmentLeasePool()
                 )
         ) {
-            final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
+            final OpenableLease<MemorySegment> lease = memorySegmentLeasePool.get();
             Assertions.assertEquals(1, lease.refs());
             Assertions.assertDoesNotThrow(lease::close);
             Assertions.assertEquals(0, lease.refs());
 
-            final PoolableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
+            final OpenableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
 
             Assertions.assertEquals(1, lease2.refs());
             Assertions.assertDoesNotThrow(lease2::close);

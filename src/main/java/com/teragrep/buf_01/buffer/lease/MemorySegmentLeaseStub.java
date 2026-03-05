@@ -51,7 +51,7 @@ import java.util.Objects;
 /**
  * Stub implementation of the {@link Lease}
  */
-public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment> {
+public final class MemorySegmentLeaseStub implements OpenableLease<MemorySegment> {
 
     private final boolean isStub;
 

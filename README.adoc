@@ -21,6 +21,7 @@ A library for providing leased access to Java MemorySegments.
 - All subleases must be closed before the parent lease can be returned to the pool.
 - The parent lease will fill the underlying MemorySegment with zeroes when returned to the pool.
 - In order to retrieve n bytes worth of MemorySegments, the included LeaseMultiGet object can be used. The pool itself will provide the first one from the inner queue data structure.
+- Leases must be opened before using them. This can be handled by using the OpeningPool decorator.
 
 
 == Documentation
@@ -44,16 +45,16 @@ A MemorySegment can be taken from the Pool in the following manner, using try-wi
 [source,java]
 ----
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.UnboundPool;
 import java.lang.foreign.MemorySegment;
 
 void example() {
-    try (final PoolableSupplier<Pool<PoolableLease<MemorySegment>>, PoolableLease<MemorySegment>> poolableSupplier = new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 1024)) {
-        try (final Pool<PoolableLease<MemorySegment>> leasePool = new OpeningPool(new UnboundPool<>(poolableSupplier, new MemorySegmentLeaseStub()))) {
-            try (final PoolableLease<MemorySegment> lease = leasePool.get()) {
+    try (final PoolableSupplier<Pool<OpenableLease<MemorySegment>>, OpenableLease<MemorySegment>> poolableSupplier = new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 1024)) {
+        try (final Pool<OpenableLease<MemorySegment>> leasePool = new OpeningPool(new UnboundPool<>(poolableSupplier, new MemorySegmentLeaseStub()))) {
+            try (final OpenableLease<MemorySegment> lease = leasePool.get()) {
                 final MemorySegment memorySegment = lease.leasedObject();
             }
         }

@@ -45,23 +45,23 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
-public final class OpeningPool implements Pool<PoolableLease<MemorySegment>> {
+public final class OpeningPool implements Pool<OpenableLease<MemorySegment>> {
 
-    private final Pool<PoolableLease<MemorySegment>> origin;
+    private final Pool<OpenableLease<MemorySegment>> origin;
 
-    public OpeningPool(final Pool<PoolableLease<MemorySegment>> origin) {
+    public OpeningPool(final Pool<OpenableLease<MemorySegment>> origin) {
         this.origin = origin;
     }
 
     @Override
-    public PoolableLease<MemorySegment> get() {
-        final PoolableLease<MemorySegment> lease = origin.get();
+    public OpenableLease<MemorySegment> get() {
+        final OpenableLease<MemorySegment> lease = origin.get();
         if (!lease.isStub()) {
             lease.open();
         }
@@ -69,8 +69,8 @@ public final class OpeningPool implements Pool<PoolableLease<MemorySegment>> {
     }
 
     @Override
-    public void offer(final PoolableLease<MemorySegment> memorySegmentPoolableLease) {
-        origin.offer(memorySegmentPoolableLease);
+    public void offer(final OpenableLease<MemorySegment> memorySegmentOpenableLease) {
+        origin.offer(memorySegmentOpenableLease);
     }
 
     @Override

@@ -47,7 +47,7 @@ package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.UnboundPool;
@@ -75,8 +75,8 @@ final class LeasePoolTest {
                                 new UnboundPool<>(supplier, new MemorySegmentLeaseStub())
                         )
                 ) {
-                    final PoolableLease<MemorySegment> leaseRef;
-                    try (final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get()) {
+                    final OpenableLease<MemorySegment> leaseRef;
+                    try (final OpenableLease<MemorySegment> lease = memorySegmentLeasePool.get()) {
                         leaseRef = lease;
                         Assertions.assertFalse(lease.isStub());
 
@@ -126,12 +126,12 @@ final class LeasePoolTest {
                         new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 4096), new MemorySegmentLeaseStub())
                 )
         ) {
-            final PoolableLease<MemorySegment> lease = memorySegmentLeasePool.get();
+            final OpenableLease<MemorySegment> lease = memorySegmentLeasePool.get();
             Assertions.assertEquals(1L, lease.refs());
             Assertions.assertDoesNotThrow(lease::close);
             Assertions.assertEquals(0L, lease.refs());
 
-            final PoolableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
+            final OpenableLease<MemorySegment> lease2 = memorySegmentLeasePool.get();
             Assertions.assertEquals(1L, lease2.refs());
             Assertions.assertDoesNotThrow(lease2::close);
             Assertions.assertEquals(0L, lease2.refs());

@@ -56,7 +56,7 @@ import java.util.concurrent.Phaser;
  * Decorator for {@link MemorySegmentContainer} that zeroes the encapsulated {@link MemorySegment} on {@link #close()}.
  * Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track reference count in a
  * non-blocking way. Used for sub-leases, which are not to be returned to a {@link com.teragrep.poj_01.pool.Pool}, which
- * is why it uses a {@link Lease} instead of a {@link PoolableLease}.
+ * is why it uses a {@link Lease} instead of a {@link OpenableLease}.
  */
 public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 

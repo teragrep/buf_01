@@ -47,7 +47,7 @@ package com.teragrep.buf_01.buffer.supply;
 
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.poj_01.pool.Pool;
 import com.teragrep.poj_01.pool.PoolableSupplier;
 
@@ -58,7 +58,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class ArenaMemorySegmentLeaseSupplier
-        implements PoolableSupplier<Pool<PoolableLease<MemorySegment>>, PoolableLease<MemorySegment>> {
+        implements PoolableSupplier<Pool<OpenableLease<MemorySegment>>, OpenableLease<MemorySegment>> {
 
     private final Arena arena;
     private final long blockSize;
@@ -79,12 +79,12 @@ public final class ArenaMemorySegmentLeaseSupplier
     }
 
     @Override
-    public void accept(final PoolableLease<MemorySegment> memorySegmentLease) {
+    public void accept(final OpenableLease<MemorySegment> memorySegmentLease) {
         // no-op
     }
 
     @Override
-    public synchronized PoolableLease<MemorySegment> apply(final Pool<PoolableLease<MemorySegment>> poolRef) {
+    public synchronized OpenableLease<MemorySegment> apply(final Pool<OpenableLease<MemorySegment>> poolRef) {
         return new MemorySegmentLease(
                 new MemorySegmentContainerImpl(
                         bufferId.incrementAndGet(),
