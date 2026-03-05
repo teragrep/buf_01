@@ -44,7 +44,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <revision>0.0.1</revision>
     <sha1></sha1>
-    <teragrep.poj_01.version>1.0.1</teragrep.poj_01.version>
+    <teragrep.poj_01.version>3.0.0</teragrep.poj_01.version>
   </properties>
   <dependencies>
     <dependency>
@@ -273,6 +273,8 @@
             <exclude>.flattened-pom.xml</exclude>
             <exclude>pom.xml</exclude>
             <exclude>eclipse-java-formatter.xml</exclude>
+            <!-- spotbugs -->
+            <exclude>spotbugs-exclude-filter.xml</exclude>
             <!-- readme -->
             <exclude>README.adoc</exclude>
           </excludes>
@@ -495,8 +497,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <!-- Version 4.8.6.6 is currently last java 8 compatible release -->
-        <version>4.8.6.6</version>
+        <version>4.9.8.2</version>
         <configuration>
           <!-- Default configuration -->
           <xmlOutput>true</xmlOutput>
@@ -504,6 +505,7 @@
           <failThreshold>Low</failThreshold>
           <failOnError>true</failOnError>
           <includeTests>true</includeTests>
+          <excludeFilterFile>${project.basedir}/spotbugs-exclude-filter.xml</excludeFilterFile>
         </configuration>
         <executions>
           <execution>
@@ -517,7 +519,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
+        <version>0.8.14</version>
         <executions>
           <execution>
             <goals>

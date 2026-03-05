@@ -45,7 +45,7 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
@@ -53,20 +53,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class LeaseMultiGet implements MultiGet<PoolableLease<MemorySegment>> {
+public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment>> {
 
-    private final Pool<PoolableLease<MemorySegment>> leasePool;
+    private final Pool<OpenableLease<MemorySegment>> leasePool;
 
-    public LeaseMultiGet(final Pool<PoolableLease<MemorySegment>> leasePool) {
+    public LeaseMultiGet(final Pool<OpenableLease<MemorySegment>> leasePool) {
         this.leasePool = leasePool;
     }
 
     @Override
-    public List<PoolableLease<MemorySegment>> get(final long bytesCount) {
+    public List<OpenableLease<MemorySegment>> get(final long bytesCount) {
         long currentSize = 0;
-        final List<PoolableLease<MemorySegment>> leases = new ArrayList<>();
+        final List<OpenableLease<MemorySegment>> leases = new ArrayList<>();
         while (currentSize < bytesCount) {
-            final PoolableLease<MemorySegment> lease = leasePool.get();
+            final OpenableLease<MemorySegment> lease = leasePool.get();
             if (lease.isStub()) {
                 throw new IllegalStateException("Pool supplied a stub lease!");
             }

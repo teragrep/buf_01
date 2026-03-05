@@ -43,60 +43,9 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.container;
+package com.teragrep.buf_01.buffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public interface Openable {
 
-import java.lang.foreign.MemorySegment;
-import java.util.Objects;
-
-/**
- * Decorator for {@link MemorySegment} with a synchronized access for it.
- */
-public final class MemorySegmentContainerImpl implements MemorySegmentContainer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MemorySegmentContainerImpl.class);
-    private final long id;
-    private final MemorySegment memorySegment;
-
-    public MemorySegmentContainerImpl(long id, MemorySegment memorySegment) {
-        this.id = id;
-        this.memorySegment = memorySegment;
-    }
-
-    @Override
-    public long id() {
-        return id;
-    }
-
-    @Override
-    public MemorySegment memorySegment() {
-        return memorySegment;
-    }
-
-    @Override
-    public String toString() {
-        return "MemorySegmentContainerImpl{" + "id=" + id + ", memorySegment=" + memorySegment + '}';
-    }
-
-    @Override
-    public boolean isStub() {
-        LOGGER.debug("id <{}>", id);
-        return false;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final MemorySegmentContainerImpl that = (MemorySegmentContainerImpl) o;
-        return id == that.id && Objects.equals(memorySegment, that.memorySegment);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, memorySegment);
-    }
+    public abstract void open();
 }

@@ -45,10 +45,12 @@
  */
 package com.teragrep.buf_01.buffer.lease;
 
+import com.teragrep.stb_01.Stubable;
+
 /**
  * Interface for reference tracking shared resources, such as buffers.
  */
-public interface Lease<T> extends AutoCloseable {
+public interface Lease<T> extends AutoCloseable, Stubable {
 
     /**
      * @return id of the leased object
@@ -69,11 +71,6 @@ public interface Lease<T> extends AutoCloseable {
      * @return status of the lease, {@code true} indicates that the lease has expired.
      */
     public abstract boolean hasZeroRefs();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
 
     /**
      * Provides a slice from the offset to the end of the segment. Registered as a sub lease.

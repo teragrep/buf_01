@@ -48,9 +48,8 @@ package com.teragrep.buf_01.buffer.pool;
 import com.teragrep.buf_01.buffer.container.MemorySegmentContainer;
 import com.teragrep.buf_01.buffer.lease.Lease;
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
-import com.teragrep.buf_01.buffer.supply.MemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,15 +70,15 @@ import java.util.concurrent.locks.ReentrantLock;
  * Non-blocking pool for {@link MemorySegmentContainer} objects. All objects in the pool are
  * {@link ByteBuffer#clear()}ed before returning to the pool by {@link Lease}.
  */
-public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<MemorySegment>> {
+public final class DebugMemorySegmentLeasePool implements Pool<OpenableLease<MemorySegment>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);
 
-    private final Map<Long, MemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
+    private final Map<Long, ArenaMemorySegmentLeaseSupplier> suppliers = new ConcurrentHashMap<>();
 
-    private final ConcurrentLinkedQueue<PoolableLease<MemorySegment>> queue;
+    private final ConcurrentLinkedQueue<OpenableLease<MemorySegment>> queue;
 
-    private final PoolableLease<MemorySegment> leaseStub;
+    private final OpenableLease<MemorySegment> leaseStub;
     private final AtomicBoolean close;
 
     private final int segmentSize;
@@ -97,22 +96,19 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
         this.lock = new ReentrantLock();
     }
 
-    public PoolableLease<MemorySegment> get() {
+    public OpenableLease<MemorySegment> get() {
         if (close.get()) {
             return new MemorySegmentLeaseStub();
         }
-        // get or create
-        PoolableLease<MemorySegment> lease = queue.poll();
-        if (lease == null) {
-            // if queue is empty or stub object, create a new BufferContainer and BufferLease.
-            final MemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
-                    Arena.ofShared(),
-                    segmentSize,
-                    bufferId
-            );
-            lease = supplier.get();
-            suppliers.put(bufferId.get(), supplier);
-        }
+
+        // always get new lease
+        final ArenaMemorySegmentLeaseSupplier supplier = new ArenaMemorySegmentLeaseSupplier(
+                Arena.ofShared(),
+                segmentSize,
+                bufferId.get()
+        );
+        final OpenableLease<MemorySegment> lease = supplier.apply(this);
+        suppliers.put(bufferId.incrementAndGet(), supplier);
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("returning bufferLease id <{}> with refs <{}>", lease.id(), lease.refs());
@@ -124,32 +120,14 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
     /**
      * return {@link MemorySegmentContainer} into the pool.
      * 
-     * @param lease {@link MemorySegmentContainer} from {@link Lease} which has been {@link ByteBuffer#clear()}ed.
+     * @param object {@link MemorySegmentContainer} from {@link Lease} which has been {@link ByteBuffer#clear()}ed.
      */
     @Override
-    public void offer(PoolableLease<MemorySegment> lease) {
+    public void offer(OpenableLease<MemorySegment> object) {
         // debug pool, instead of returning to pool arena is closed and memorySegment is discarded.
-        if (!lease.isStub()) {
-            MemorySegmentLeaseSupplier supplier = suppliers.get(lease.id());
-            supplier.close(); // closes Arena
-        }
-
-        if (close.get()) {
-            LOGGER.debug("closing in offer");
-            while (!queue.isEmpty()) {
-                if (lock.tryLock()) {
-                    queue.clear();
-                    lock.unlock();
-                }
-                else {
-                    break;
-                }
-            }
-        }
-        if (LOGGER.isDebugEnabled()) {
-            long queueSegments = queue.size();
-            long queueBytes = queueSegments * segmentSize;
-            LOGGER.debug("offer complete, queueSegments <{}>, queueBytes <{}>", queueSegments, queueBytes);
+        if (!object.isStub()) {
+            suppliers.get(object.id()).accept(object);
+            suppliers.get(object.id()).close();
         }
     }
 
@@ -160,9 +138,6 @@ public final class DebugMemorySegmentLeasePool implements Pool<PoolableLease<Mem
     public void close() {
         LOGGER.debug("close called");
         close.set(true);
-
-        // close all that are in the pool right now
-        offer(leaseStub);
     }
 
     @Override
