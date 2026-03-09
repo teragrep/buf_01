@@ -49,9 +49,34 @@ import com.teragrep.stb_01.Stubable;
 
 import java.lang.foreign.MemorySegment;
 
+// spotless:off
 /**
- * MemorySegmentContainer is a decorator for {@link MemorySegment} with an id.
+ * @class MemorySegmentContainer
+ * @brief Contains the MemorySegment, providing an id and stub functionality.
+ * @responsibilities
+ * - Contains the MemorySegment
+ * - Identification
+ * - Stubability
+ * @collaborators
+ * - MemorySegmentLease
+ * @startuml
+ * class MemorySegmentContainer {
+ * + id();
+ * + memorySegment();
+ * + isStub();
+ * }
+ * MemorySegmentContainer --> MemorySegmentLease : memorySegment
+ * note right of MemorySegmentContainer
+ * Responsibilities:
+ * - Contains the MemorySegment
+ * - Identification
+ * - Stubability
+ * Collaborators:
+ * - MemorySegmentLease
+ * end note
+ * @enduml
  */
+// spotless:on
 public interface MemorySegmentContainer extends Stubable {
 
     /**

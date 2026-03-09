@@ -127,6 +127,15 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <warSourceDirectory>target/docs</warSourceDirectory>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.5.0</version>
         <executions>
@@ -137,6 +146,39 @@
             </goals>
             <configuration>
               <source>25</source>
+              <doclint>none</doclint>
+              <tags>
+                <tag>
+                  <name>startuml</name>
+                  <placement></placement>
+                  <head>startuml</head>
+                </tag>
+                <tag>
+                  <name>enduml</name>
+                  <placement></placement>
+                  <head>enduml</head>
+                </tag>
+                <tag>
+                  <name>class</name>
+                  <placement></placement>
+                  <head>class</head>
+                </tag>
+                <tag>
+                  <name>brief</name>
+                  <placement></placement>
+                  <head>brief</head>
+                </tag>
+                <tag>
+                  <name>responsibilities</name>
+                  <placement></placement>
+                  <head>responsibilities</head>
+                </tag>
+                <tag>
+                  <name>collaborators</name>
+                  <placement></placement>
+                  <head>collaborators</head>
+                </tag>
+              </tags>
             </configuration>
           </execution>
         </executions>
@@ -185,6 +227,7 @@
               <version>4.10.0</version>
             </eclipse>
             <removeUnusedImports></removeUnusedImports>
+            <toggleOffOn></toggleOffOn>
             <licenseHeader>
               <file>${project.basedir}/license-header</file>
             </licenseHeader>
@@ -269,6 +312,7 @@
             <exclude>.github/pull_request_template.md</exclude>
             <exclude>toolchains.xml</exclude>
             <exclude>settings.xml</exclude>
+            <exclude>Doxyfile</exclude>
             <!-- maven -->
             <exclude>.flattened-pom.xml</exclude>
             <exclude>pom.xml</exclude>
