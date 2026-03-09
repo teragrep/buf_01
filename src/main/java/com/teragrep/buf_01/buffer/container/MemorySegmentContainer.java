@@ -45,12 +45,14 @@
  */
 package com.teragrep.buf_01.buffer.container;
 
+import com.teragrep.stb_01.Stubable;
+
 import java.lang.foreign.MemorySegment;
 
 /**
  * MemorySegmentContainer is a decorator for {@link MemorySegment} with an id.
  */
-public interface MemorySegmentContainer {
+public interface MemorySegmentContainer extends Stubable {
 
     /**
      * @return id of the MemorySegment
@@ -61,9 +63,4 @@ public interface MemorySegmentContainer {
      * @return encapsulated {@link MemorySegment}.
      */
     public abstract MemorySegment memorySegment();
-
-    /**
-     * @return is this a stub implementation.
-     */
-    public abstract boolean isStub();
 }
