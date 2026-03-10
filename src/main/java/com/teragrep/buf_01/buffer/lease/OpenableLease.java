@@ -43,18 +43,14 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.supply;
+package com.teragrep.buf_01.buffer.lease;
 
-import com.teragrep.buf_01.buffer.lease.PoolableLease;
+import com.teragrep.buf_01.buffer.Openable;
 
-import java.lang.foreign.MemorySegment;
-import java.util.function.Supplier;
-
-public interface MemorySegmentLeaseSupplier extends Supplier<PoolableLease<MemorySegment>>, AutoCloseable {
-
-    @Override
-    PoolableLease<MemorySegment> get();
-
-    @Override
-    void close();
+/**
+ * Generic Lease type for leases which are to be returned to a Pool.
+ * 
+ * @param <T> Type for the generic class {@link Lease}
+ */
+public interface OpenableLease<T> extends Lease<T>, Openable {
 }

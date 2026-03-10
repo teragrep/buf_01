@@ -1,0 +1,11 @@
+<FindBugsFilter>
+    <!-- Ignore exposing internal representation (MemorySegment) -->
+    <Match>
+        <Class name="com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl"/>
+        <Bug pattern="EI_EXPOSE_REP" />
+    </Match>
+    <Match>
+        <Class name="com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
+</FindBugsFilter>

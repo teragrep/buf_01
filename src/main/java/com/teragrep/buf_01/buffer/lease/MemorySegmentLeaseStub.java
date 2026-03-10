@@ -51,7 +51,7 @@ import java.util.Objects;
 /**
  * Stub implementation of the {@link Lease}
  */
-public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment> {
+public final class MemorySegmentLeaseStub implements OpenableLease<MemorySegment> {
 
     private final boolean isStub;
 
@@ -110,5 +110,10 @@ public final class MemorySegmentLeaseStub implements PoolableLease<MemorySegment
     @Override
     public int hashCode() {
         return Objects.hashCode(isStub);
+    }
+
+    @Override
+    public void open() {
+        throw new IllegalStateException("MemorySegmentLeaseStub cannot be opened!");
     }
 }

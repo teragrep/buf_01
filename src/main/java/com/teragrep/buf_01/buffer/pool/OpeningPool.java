@@ -43,14 +43,52 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.lease;
+package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.poj_01.pool.Poolable;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
+import com.teragrep.poj_01.pool.Pool;
 
-/**
- * Generic Lease type for leases which are to be returned to a Pool.
- * 
- * @param <T> Type for the generic class {@link Lease}
- */
-public interface PoolableLease<T> extends Lease<T>, Poolable {
+import java.lang.foreign.MemorySegment;
+import java.util.Objects;
+
+public final class OpeningPool implements Pool<OpenableLease<MemorySegment>> {
+
+    private final Pool<OpenableLease<MemorySegment>> origin;
+
+    public OpeningPool(final Pool<OpenableLease<MemorySegment>> origin) {
+        this.origin = origin;
+    }
+
+    @Override
+    public OpenableLease<MemorySegment> get() {
+        final OpenableLease<MemorySegment> lease = origin.get();
+        if (!lease.isStub()) {
+            lease.open();
+        }
+        return lease;
+    }
+
+    @Override
+    public void offer(final OpenableLease<MemorySegment> memorySegmentOpenableLease) {
+        origin.offer(memorySegmentOpenableLease);
+    }
+
+    @Override
+    public void close() {
+        origin.close();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final OpeningPool that = (OpeningPool) o;
+        return Objects.equals(origin, that.origin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(origin);
+    }
 }
