@@ -47,10 +47,36 @@ package com.teragrep.buf_01.buffer.lease;
 
 import com.teragrep.buf_01.buffer.Openable;
 
+// spotless:off
 /**
- * Generic Lease type for leases which are to be returned to a Pool.
- * 
- * @param <T> Type for the generic class {@link Lease}
+ * @interface OpenableLease
+ * @brief Lease that can be opened via the open() method provided by the Openable interface.
+ * @responsibilities
+ * - Allows opening the lease, for example when retrieving it from a Pool after re-use.
+ * @collaborators
+ * - Pool
+ * - MemorySegmentLease
+ * @startuml
+ * interface Pool
+ * interface OpenableLease {
+ * + void open();
+ * + id();
+ * + refs();
+ * + leasedObject();
+ * + hasZeroRefs();
+ * + sliceAt(offset);
+ * }
+ * OpenableLease --> Pool : returns to pool
+ * OpenableLease --> MemorySegmentLease : implementation
+ * note right of OpenableLease
+ * Responsibilities:
+ * - Opening lease
+ * Collaborators:
+ * - Pool
+ * - MemorySegmentLease
+ * end note
+ * @enduml
  */
+// spotless:on
 public interface OpenableLease<T> extends Lease<T>, Openable {
 }

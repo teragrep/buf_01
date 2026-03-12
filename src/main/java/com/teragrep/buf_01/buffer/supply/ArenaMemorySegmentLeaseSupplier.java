@@ -57,6 +57,41 @@ import java.lang.foreign.ValueLayout;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
+// spotless:off
+/**
+ * @class ArenaMemorySegmentLeaseSupplier
+ * @brief Supplies new Arena-based MemorySegment from the specified Arena.
+ *
+ * @responsibilities
+ * - Provides new MemorySegment and corresponding Lease
+ * - Closes Arena on close
+ *
+ * @collaborators
+ * - MemorySegmentLease
+ * - Pool
+ *
+ * @startuml
+ * class ArenaMemorySegmentLeaseSupplier {
+ * + apply(poolRef);
+ * + accept(lease);
+ * + close();
+ * }
+ *
+ * ArenaMemorySegmentLeaseSupplier --> MemorySegmentLease : provides
+ *
+ * note right of ArenaMemorySegmentLeaseSupplier
+ * Responsibilities:
+ * - Provides new MemorySegment and corresponding Lease
+ * - Closes Arena on close
+ *
+ * Collaborators:
+ * - MemorySegmentLease
+ * - Pool
+ * end note
+ *
+ * @enduml
+*/
+// spotless:on
 public final class ArenaMemorySegmentLeaseSupplier
         implements PoolableSupplier<Pool<OpenableLease<MemorySegment>>, OpenableLease<MemorySegment>> {
 

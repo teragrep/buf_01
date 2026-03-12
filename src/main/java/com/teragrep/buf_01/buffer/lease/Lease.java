@@ -47,9 +47,40 @@ package com.teragrep.buf_01.buffer.lease;
 
 import com.teragrep.stb_01.Stubable;
 
+// spotless:off
 /**
- * Interface for reference tracking shared resources, such as buffers.
+ * @interface Lease
+ * @brief Contains reference tracking and slicing functionality for the type T encapsulated object.
+ * @responsibilities
+ * - Reference tracking
+ * - Provides access to encapsulated leased object
+ * - Zero references removes access to leased object
+ * @collaborators
+ * - Pool
+ * - MemorySegmentContainer
+ * @startuml
+ * interface Pool
+ * interface Lease {
+ * + id();
+ * + refs();
+ * + leasedObject();
+ * + hasZeroRefs();
+ * + sliceAt(offset);
+ * }
+ * Lease --> Pool : returned lease
+ * Lease --> MemorySegmentContainer : reference tracked access
+ * note right of Lease
+ * Responsibilities:
+ * - Reference tracking
+ * - Provides access to encapsulated leased object
+ * - Zero references removes access to leased object
+ * Collaborators:
+ * - Pool
+ * - MemorySegmentContainer
+ * end note
+ * @enduml
  */
+// spotless:on
 public interface Lease<T> extends AutoCloseable, Stubable {
 
     /**

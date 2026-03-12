@@ -66,10 +66,36 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+// spotless:off
 /**
- * Non-blocking pool for {@link MemorySegmentContainer} objects. All objects in the pool are
- * {@link ByteBuffer#clear()}ed before returning to the pool by {@link Lease}.
+ * @class DebugMemorySegmentLeasePool
+ * @brief (Only for testing) Pool that uses a separate Arena for all MemorySegments. Each segment and its Arena are
+ *        closed on return and not reused.
+ * @responsibilities
+ * - Provide new supplier for each MemorySegment
+ * - Close matching supplier and MemorySegment on returning to Pool
+ * @collaborators
+ * - ArenaMemorySegmentLeaseSupplier
+ * - MemorySegmentLease
+ * @startuml
+ * class DebugMemorySegmentLeasePool {
+ * + get();
+ * + offer(lease);
+ * + close();
+ * }
+ * DebugMemorySegmentLeasePool --> ArenaMemorySegmentLeaseSupplier : gets new MemorySegmentLease
+ * DebugMemorySegmentLeasePool --> MemorySegmentLease : provides an Opened lease, closes on offer
+ * note right of DebugMemorySegmentLeasePool
+ * Responsibilities:
+ * - Provide new supplier for each MemorySegment
+ * - Close matching supplier and MemorySegment on returning to Pool
+ * Collaborators:
+ * - ArenaMemorySegmentLeaseSupplier
+ * - MemorySegmentLease
+ * end note
+ * @enduml
  */
+// spotless:on
 public final class DebugMemorySegmentLeasePool implements Pool<OpenableLease<MemorySegment>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMemorySegmentLeasePool.class);

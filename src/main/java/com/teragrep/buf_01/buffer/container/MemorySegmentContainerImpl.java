@@ -52,7 +52,7 @@ import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
 /**
- * Decorator for {@link MemorySegment} with a synchronized access for it.
+ * Implementation of the {@link MemorySegmentContainer} interface.
  */
 public final class MemorySegmentContainerImpl implements MemorySegmentContainer {
 
