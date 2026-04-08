@@ -1,0 +1,96 @@
+on:
+  push:
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Checkout
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Cache
+      - name: Cache Local Maven Repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      # Setup java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 25
+          distribution: 'adopt'
+      # Used for docs output
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      # Make dirs
+      - name: Make dirs
+        run: mkdir -p docs/${{steps.extract_branch.outputs.branch}}/
+      # Run javadoc
+      - name: Generate javadoc
+        run: mvn -B javadoc:aggregate
+        env:
+          MAVEN_OPTS: "-Dmaven.javadoc.failOnError=false"
+      # Install dependencies
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install doxygen graphviz plantuml
+      # Generate doxygen docs
+      - name: Generate Doxygen docs
+        run: doxygen Doxyfile
+        env:
+          OUTPUT_DIRECTORY: "target/doxygen"
+      # Prepare docs
+      - name: Prepare docs
+        run: mkdir target/docs/ && mv target/doxygen/html target/docs/doxygen/ && mv target/site/apidocs target/docs/javadoc/
+      # Generate war
+      - name: Generate war from docs
+        run: mvn -B -Drevision="${{steps.extract_branch.outputs.branch}}-${{github.sha}}" -Dchangelist='' -Dsha1="" war:war
+      # Prepare release
+      - name: Move and extract war
+        run: unzip target/*.war -x "META-INF/*" "WEB-INF/*" -d "docs/${{steps.extract_branch.outputs.branch}}/" && mv target/*.war "docs/${{steps.extract_branch.outputs.branch}}/"
+      # Deploy
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/${{steps.extract_branch.outputs.branch}}/
+          target-folder: docs/${{steps.extract_branch.outputs.branch}}/
+          token: ${{ secrets.GITHUB_TOKEN }}
+      # Checkout mvn_01 gh-pages-aux files
+      - name: Fetch mvn_01 gh-pages-aux
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: teragrep/mvn_01
+          ref: main
+          sparse-checkout: |
+            gh-pages-aux/src/
+          path: target/gh-pages-aux
+      # Checkout gh-pages for branches generation
+      - name: Fetch gh-pages
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{github.repository}}
+          ref: gh-pages
+          sparse-checkout: |
+            docs/
+          path: target/gh-pages
+      # Regenerate branches.js
+      - name: Regenerate branches.js
+        run: python -c 'import os, json; print(f"var branches = {json.dumps(os.listdir("${{github.workspace}}/target/gh-pages/docs/"))}")' > ${{github.workspace}}/target/gh-pages-aux/gh-pages-aux/src/branches.js
+      # Regenerate repository.js
+      - name: Regenerate repository.js
+        run: echo 'var repository = "${{github.repository}}"' > ${{github.workspace}}/target/gh-pages-aux/gh-pages-aux/src/repository.js
+      # Deploy gh-pagex-aux files
+      - name: Deploy auxiliary files
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/gh-pages-aux/gh-pages-aux/src/
+          target-folder: /
+          token: ${{ secrets.GITHUB_TOKEN }}
+          clean-exclude: |
+            docs/
