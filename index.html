@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+  <body>
+    <script src="branches.js"></script>
+    <script src="repository.js"></script>
+    <script>
+      let htmlString = `<h1>${repository}</h1><ul>`;
+      for (let branch of branches) {
+        htmlString += `<li><a href="docs/${encodeURIComponent(branch)}/doxygen/">${branch} / Doxygen</a></li>`;
+        htmlString += `<li><a href="docs/${encodeURIComponent(branch)}/javadoc/">${branch} / Javadoc</a></li>`;
+        htmlString += "<br/>";
+      }
+      htmlString += '</ul>';
+      document.getElementsByTagName('body')[0].innerHTML = htmlString;
+    </script>
+  </body>
+</html>
