@@ -53,11 +53,47 @@ import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 import java.util.concurrent.Phaser;
 
+// spotless:off
 /**
- * Decorator for {@link MemorySegmentContainer} that zeroes the encapsulated {@link MemorySegment} on {@link #close()}.
- * Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track reference count in a
- * non-blocking way.
+ * @class MemorySegmentLease
+ * @brief Decorator for {@link MemorySegmentContainer} that zeroes the encapsulated {@link MemorySegment} on
+ *        {@link #close()}. Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track
+ *        reference count in a non-blocking way.
+ * @responsibilities
+ * - Reference tracking
+ * - Provides access to encapsulated MemorySegment
+ * - Zero references removes access to MemorySegment
+ * - Fills MemorySegment with zeroes (0) on close
+ * @collaborators
+ * - Lease
+ * - Pool
+ * - MemorySegmentSubLease
+ * @startuml
+ * interface Pool
+ * class MemorySegmentLease {
+ * + sliceAt(offset);
+ * + id();
+ * + refs();
+ * + leasedObject();
+ * + hasZeroRefs();
+ * + isStub();
+ * + close();
+ * }
+ * MemorySegmentLease --> MemorySegmentSubLease : slices into
+ * MemorySegmentLease --> Pool : returned into
+ * note right of MemorySegmentLease
+ * Responsibilities:
+ * - Reference tracking
+ * - Provides access to encapsulated MemorySegment - Zero references removes access to MemorySegment
+ * - Fills MemorySegment with zeroes (0) on close
+ * Collaborators:
+ * - Lease
+ * - Pool
+ * - MemorySegmentSubLease
+ * end note
+ * @enduml
  */
+// spotless:on
 public final class MemorySegmentLease implements OpenableLease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;

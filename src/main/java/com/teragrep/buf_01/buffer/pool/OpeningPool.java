@@ -51,6 +51,44 @@ import com.teragrep.poj_01.pool.Pool;
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
+// spotless:off
+/**
+ * @class OpeningPool
+ * @brief Decorator for the actual Pool implementation. Opens non-stub Leases on get().
+ *
+ * @responsibilities
+ * - Opens lease on get
+ * - Calls decorated pool to achieve functionality
+ *
+ * @collaborators
+ * - Pool
+ * - OpenableLease
+ *
+ * @startuml
+ * interface Pool
+ * interface OpenableLease
+ * class OpeningPool {
+ * + get();
+ * + offer(lease);
+ * + close();
+ * }
+ *
+ * OpeningPool --> OpenableLease : opens and provides
+ * OpeningPool --> Pool : decorates
+ *
+ * note right of OpeningPool
+ * Responsibilities:
+ * - Opens lease on get
+ * - Calls decorated pool to achieve functionality
+ *
+ * Collaborators:
+ * - Pool
+ * - OpenableLease
+ * end note
+ *
+ * @enduml
+*/
+// spotless:on
 public final class OpeningPool implements Pool<OpenableLease<MemorySegment>> {
 
     private final Pool<OpenableLease<MemorySegment>> origin;

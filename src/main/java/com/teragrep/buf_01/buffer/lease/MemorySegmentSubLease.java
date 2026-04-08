@@ -52,12 +52,35 @@ import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 import java.util.concurrent.Phaser;
 
+// spotless:off
 /**
- * Decorator for {@link MemorySegmentContainer} that zeroes the encapsulated {@link MemorySegment} on {@link #close()}.
- * Starts with one initial reference. Internally uses a {@link NonTerminatingPhaser} to track reference count in a
- * non-blocking way. Used for sub-leases, which are not to be returned to a {@link com.teragrep.poj_01.pool.Pool}, which
- * is why it uses a {@link Lease} instead of a {@link OpenableLease}.
+ * @class MemorySegmentSubLease
+ * @brief Similar to MemorySegmentLease, this object provides a lease, however the lease is not openable as it is not to
+ *        be returned to the Pool.
+ * @responsibilities
+ * - Provides a sublease, which cannot be reused.
+ * @collaborators
+ * - MemorySegmentLease
+ * @startuml
+ * class MemorySegmentSubLease {
+ * + sliceAt(offset);
+ * + id();
+ * + refs();
+ * + leasedObject();
+ * + hasZeroRefs();
+ * + isStub();
+ * + close();
+ * }
+ * MemorySegmentSubLease --> MemorySegmentLease : slice of
+ * note right of MemorySegmentSubLease
+ * Responsibilities:
+ * - Provides a sublease, which cannot be reused.
+ * Collaborators:
+ * - MemorySegmentLease
+ * end note
+ * @enduml
  */
+// spotless:on
 public final class MemorySegmentSubLease implements Lease<MemorySegment> {
 
     private final MemorySegmentContainer memorySegmentContainer;

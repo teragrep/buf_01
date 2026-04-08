@@ -47,9 +47,28 @@ package com.teragrep.buf_01.buffer.lease;
 
 import java.util.concurrent.Phaser;
 
+// spotless:off
 /**
- * Phaser that has the termination state disabled.
+ * @class NonTerminatingPhaser
+ * @brief Extends the Java class Phaser, disabling the termination state from the root phaser.
+ * @responsibilities
+ * - Provides reference tracking logic
+ * - Forms a Phaser tree, used when slicing Leases
+ * @collaborators
+ * - Lease
+ * @startuml
+ * class NonTerminatingPhaser {}
+ * NonTerminatingPhaser --> Lease : reference tracking
+ * note right of NonTerminatingPhaser
+ * Responsibilities:
+ * - Provides reference tracking logic
+ * - Forms a Phaser tree, used when slicing Leases
+ * Collaborators:
+ * - Lease
+ * end note
+ * @enduml
  */
+// spotless:on
 final class NonTerminatingPhaser extends Phaser {
 
     NonTerminatingPhaser(final int initialParties) {

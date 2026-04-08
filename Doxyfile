@@ -1,0 +1,40 @@
+# INPUT FILES
+INPUT                  = src/
+FILE_PATTERNS          = *.java
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */src/test/*
+
+# OUTPUT
+OUTPUT_DIRECTORY       = $(OUTPUT_DIRECTORY)
+GENERATE_LATEX         = NO
+GENERATE_HTML          = YES
+
+# JAVA MODE
+OPTIMIZE_OUTPUT_JAVA   = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+JAVADOC_AUTOBRIEF      = YES
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+# DIAGRAMS
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 2
+CLASS_DIAGRAMS         = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg
+
+# PLANTUML (optional)
+USE_PLANTUML           = YES
+PLANTUML_JAR_PATH      = /usr/share/plantuml/plantuml.jar
+PLANTUML_INCLUDE_PATH  = .
+PLANTUML_CFG_FILE      =
+
+# ALIASES (optional: adds headings like @responsibilities)
+ALIASES                += responsibilities="\par Responsibilities:"
+ALIASES                += collaborators="\par Collaborators:"
+
+# MARKDOWN
+MARKDOWN_SUPPORT       = YES

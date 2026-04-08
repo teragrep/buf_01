@@ -53,6 +53,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+// spotless:off
+/**
+ * @class LeaseMultiGet
+ * @brief Allows returning multiple OpenableLeases for the specified amount of bytes.
+ * @responsibilities
+ * - Provides enough OpenableLeases to cover the requested amount of bytes
+ * @collaborators
+ * - MultiGet
+ * - Pool
+ * @startuml
+ * interface MultiGet
+ * interface Pool
+ * class LeaseMultiGet {
+ * + get(bytesCount);
+ * }
+ * LeaseMultiGet <|-- MultiGet : implements
+ * LeaseMultiGet --> Pool : retrieves Leases from
+ * note right of LeaseMultiGet
+ * Responsibilities:
+ * - Provides enough OpenableLeases to cover the requested amount of bytes
+ * Collaborators:
+ * - MultiGet
+ * - Pool
+ * end note
+ * @enduml
+ */
+// spotless:on
 public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment>> {
 
     private final Pool<OpenableLease<MemorySegment>> leasePool;

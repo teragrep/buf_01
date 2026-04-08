@@ -47,6 +47,29 @@ package com.teragrep.buf_01.buffer.pool;
 
 import java.util.List;
 
+// spotless:off
+/**
+ * @interface MultiGet
+ * @brief Provides an interface for getting multiples of the given type.
+ * @responsibilities - Provides multiple of given type for the requested count (could be byte count, for example)
+ * @collaborators
+ * - LeaseMultiGet
+ * - Pool
+ * @startuml
+ * interface MultiGet {
+ * + get(count);
+ * }
+ * MultiGet --> LeaseMultiGet : implemented by
+ * note right of MultiGet
+ * Responsibilities:
+ * - Provides multiple of given type for the requested count (could be byte count, for example)
+ * Collaborators:
+ * - LeaseMultiGet
+ * - Pool
+ * end note
+ * @enduml
+ */
+// spotless:on
 public interface MultiGet<T> {
 
     public abstract List<T> get(long count);
