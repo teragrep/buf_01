@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['leasedobject_0',['leasedobject',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html#aafa073cb18228967f4c82f84a623a94e',1,'com.teragrep.buf_01.buffer.lease.Lease.leasedObject()'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLease.html#ada20dab954bf1910393a8d6c48f007ec',1,'com.teragrep.buf_01.buffer.lease.MemorySegmentLease.leasedObject()'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a0864901091d3e977b07b651dcc86d57e',1,'com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub.leasedObject()'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentSubLease.html#a71b03518b3447832b4088f233d1f293a',1,'com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease.leasedObject()']]],
+  ['leasemultiget_1',['LeaseMultiGet',['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1LeaseMultiGet.html#a9aebe04048d9c8615a5ea0c8934b9a9a',1,'com::teragrep::buf_01::buffer::pool::LeaseMultiGet']]]
+];
