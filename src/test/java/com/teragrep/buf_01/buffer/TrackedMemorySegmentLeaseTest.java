@@ -58,7 +58,7 @@ import java.lang.foreign.Arena;
 public final class TrackedMemorySegmentLeaseTest {
 
     @Test
-    void testProgressing() {
+    void testReadProgressing() {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
@@ -77,6 +77,30 @@ public final class TrackedMemorySegmentLeaseTest {
 
         Assertions.assertFalse(trackedLease.hasNext());
         Assertions.assertThrows(IndexOutOfBoundsException.class, trackedLease::next);
+        Assertions.assertEquals(5L, trackedLease.currentPosition());
+    }
+
+    @Test
+    void testWriteProgressing() {
+        final OpeningPool pool = new OpeningPool(
+                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
+        );
+        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+
+        int loops = 0;
+        for (int i = 0; i < 5; i++) {
+            Assertions.assertEquals(i, trackedLease.currentPosition());
+            Assertions.assertTrue(trackedLease.hasNext());
+            Assertions.assertDoesNotThrow(() -> trackedLease.write((byte) 'a'));
+            loops++;
+        }
+        Assertions.assertEquals(5, loops);
+
+        Assertions.assertFalse(trackedLease.hasNext());
+        Assertions.assertThrows(IndexOutOfBoundsException.class, trackedLease::next);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> trackedLease.write((byte) 'b'));
         Assertions.assertEquals(5L, trackedLease.currentPosition());
     }
 }
