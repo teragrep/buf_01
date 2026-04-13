@@ -47,6 +47,7 @@ package com.teragrep.buf_01.buffer.lease;
 
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
@@ -168,5 +169,20 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         }
 
         limit.set(newLimit);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TrackedMemorySegmentLease that = (TrackedMemorySegmentLease) o;
+        return Objects.equals(origin, that.origin) && Objects.equals(currentOffset, that.currentOffset)
+                && Objects.equals(limit, that.limit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origin, currentOffset, limit);
     }
 }

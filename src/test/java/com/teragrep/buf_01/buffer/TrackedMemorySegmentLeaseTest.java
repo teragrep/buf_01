@@ -50,6 +50,7 @@ import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.UnboundPool;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -180,5 +181,10 @@ public final class TrackedMemorySegmentLeaseTest {
         trackedLease.position(0L);
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
+    }
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(TrackedMemorySegmentLease.class).verify();
     }
 }
