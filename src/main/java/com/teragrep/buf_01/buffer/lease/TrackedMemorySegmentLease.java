@@ -50,6 +50,48 @@ import java.lang.foreign.ValueLayout;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
+// spotless:off
+/**
+ * @class TrackedMemorySegmentLease
+ * @brief Decorates a MemorySegmentLease, providing position, limit and iteration methods.
+ *
+ * @responsibilities
+ * - Decorates MemorySegmentLease, providing position, limit and iteration.
+ *
+ * @collaborators
+ * - MemorySegmentLease
+ *
+ * @startuml
+ * class TrackedMemorySegmentLease {
+ * + id();
+ * + refs();
+ * + leasedObject();
+ * + hasZeroRefs();
+ * + sliceAt(offset);
+ * + isStub();
+ * + close();
+ * + hasNext();
+ * + next();
+ * + write(byte);
+ * + currentPosition();
+ * + position(pos);
+ * + currentLimit();
+ * + limit(lim);
+ * }
+ *
+ * TrackedMemorySegmentLease --> MemorySegmentLease : decorates
+ *
+ * note right of TrackedMemorySegmentLease
+ * Responsibilities:
+ * - Decorates MemorySegmentLease, providing position, limit and iteration.
+ *
+ * Collaborators:
+ * - MemorySegmentLease
+ * end note
+ *
+ * @enduml
+*/
+// spotless:on
 public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
 
     private final Lease<MemorySegment> origin;
