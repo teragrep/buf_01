@@ -136,6 +136,13 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         return origin.hasZeroRefs();
     }
 
+    /**
+     * Provides an UNTRACKED slice from offset to end. Decorate with a new TrackedMemorySegmentLease if tracking
+     * functions are desired.
+     * 
+     * @param offset start offset
+     * @return Untracked slice
+     */
     @Override
     public Lease<MemorySegment> sliceAt(final long offset) {
         return origin.sliceAt(offset);
