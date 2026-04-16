@@ -166,6 +166,71 @@ public final class TrackedMemorySegmentLeaseTest {
     }
 
     @Test
+    void testSetPositionPastLimit() {
+        final OpeningPool pool = new OpeningPool(
+                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
+        );
+        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+
+        trackedLease.limit(3L);
+
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+        Assertions.assertEquals(3L, trackedLease.currentLimit());
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> trackedLease.position(4L));
+    }
+
+    @Test
+    void testSetLimitLowerThanPosition() {
+        final OpeningPool pool = new OpeningPool(
+                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
+        );
+        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+
+        trackedLease.position(4L);
+
+        Assertions.assertEquals(4L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+
+        trackedLease.limit(2L);
+
+        Assertions.assertEquals(2L, trackedLease.currentPosition());
+        Assertions.assertEquals(2L, trackedLease.currentLimit());
+    }
+
+    @Test
+    void testTurnLimitOffDoesNotAffectPosition() {
+        final OpeningPool pool = new OpeningPool(
+                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
+        );
+        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+
+        trackedLease.position(4L);
+
+        Assertions.assertEquals(4L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+
+        trackedLease.limit(2L);
+
+        Assertions.assertEquals(2L, trackedLease.currentPosition());
+        Assertions.assertEquals(2L, trackedLease.currentLimit());
+
+        trackedLease.limit(-1L);
+
+        Assertions.assertEquals(2L, trackedLease.currentPosition());
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+    }
+
+    @Test
     void testResettingPosition() {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())

@@ -194,6 +194,14 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
                             + newPosition
             );
         }
+
+        final long currentLimit = limit.get();
+        if (newPosition > currentLimit && currentLimit != -1) {
+            throw new IndexOutOfBoundsException(
+                    "New position was larger than the limit, limit=" + limit.get() + " newPosition=" + newPosition
+            );
+        }
+
         currentOffset.set(newPosition);
     }
 
@@ -211,6 +219,10 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         }
 
         limit.set(newLimit);
+
+        if (newLimit < currentPosition() && newLimit != -1) {
+            position(newLimit);
+        }
     }
 
     @Override
