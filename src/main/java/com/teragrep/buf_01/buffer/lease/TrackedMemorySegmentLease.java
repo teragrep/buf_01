@@ -169,23 +169,25 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
 
     @Override
     public byte next() {
+        final long currentOffset = offsetUpdater.get(this);
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot provide next byte");
         }
-        final long nextIndex = offsetUpdater.getAndAccumulate(this, 1L, Long::sum);
+        offsetUpdater.compareAndSet(this, currentOffset, currentOffset + 1);
 
-        return origin.leasedObject().get(ValueLayout.JAVA_BYTE, nextIndex);
+        return origin.leasedObject().get(ValueLayout.JAVA_BYTE, currentOffset);
     }
 
     @Override
     public void write(final byte b) {
+        final long currentOffset = offsetUpdater.get(this);
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot write to next byte");
         }
 
-        final long nextIndex = offsetUpdater.getAndAccumulate(this, 1L, Long::sum);
+        offsetUpdater.compareAndSet(this, currentOffset, currentOffset + 1);
 
-        origin.leasedObject().set(ValueLayout.JAVA_BYTE, nextIndex, b);
+        origin.leasedObject().set(ValueLayout.JAVA_BYTE, currentOffset, b);
     }
 
     @Override
