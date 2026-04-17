@@ -46,6 +46,7 @@
 package com.teragrep.buf_01.buffer;
 
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
+import com.teragrep.buf_01.buffer.lease.TrackedLease;
 import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
@@ -55,6 +56,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 
 public final class TrackedMemorySegmentLeaseTest {
 
@@ -63,7 +65,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
 
@@ -86,7 +88,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
 
@@ -110,7 +112,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
 
@@ -129,7 +131,7 @@ public final class TrackedMemorySegmentLeaseTest {
         Assertions.assertEquals(5L, trackedLease.currentPosition());
 
         // Re-wrap lease and read it
-        final TrackedMemorySegmentLease readingLease = new TrackedMemorySegmentLease(trackedLease);
+        final TrackedLease<MemorySegment> readingLease = new TrackedMemorySegmentLease(trackedLease);
 
         Assertions.assertEquals(0L, readingLease.currentPosition());
 
@@ -152,7 +154,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
         Assertions.assertEquals(-1L, trackedLease.currentLimit());
@@ -170,7 +172,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
         Assertions.assertEquals(-1L, trackedLease.currentLimit());
@@ -188,7 +190,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
         Assertions.assertEquals(-1L, trackedLease.currentLimit());
@@ -209,7 +211,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
         Assertions.assertEquals(-1L, trackedLease.currentLimit());
@@ -235,7 +237,7 @@ public final class TrackedMemorySegmentLeaseTest {
         final OpeningPool pool = new OpeningPool(
                 new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
         );
-        final TrackedMemorySegmentLease trackedLease = new TrackedMemorySegmentLease(pool.get());
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
 
         Assertions.assertEquals(0L, trackedLease.currentPosition());
 

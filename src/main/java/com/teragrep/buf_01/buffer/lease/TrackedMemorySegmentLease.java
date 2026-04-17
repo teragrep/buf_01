@@ -80,6 +80,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * }
  *
  * TrackedMemorySegmentLease --> MemorySegmentLease : decorates
+ * TrackedMemorySegmentLease --> TrackedLease : implements
  *
  * note right of TrackedMemorySegmentLease
  * Responsibilities:
@@ -92,7 +93,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @enduml
 */
 // spotless:on
-public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
+public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegment> {
 
     private final Lease<MemorySegment> origin;
     private final AtomicLong currentOffset;
@@ -136,16 +137,9 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         return origin.hasZeroRefs();
     }
 
-    /**
-     * Provides an UNTRACKED slice from offset to end. Decorate with a new TrackedMemorySegmentLease if tracking
-     * functions are desired.
-     * 
-     * @param offset start offset
-     * @return Untracked slice
-     */
     @Override
-    public Lease<MemorySegment> sliceAt(final long offset) {
-        return origin.sliceAt(offset);
+    public TrackedLease<MemorySegment> sliceAt(final long offset) {
+        return new TrackedMemorySegmentLease(origin.sliceAt(offset));
     }
 
     @Override
@@ -158,6 +152,7 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         origin.close();
     }
 
+    @Override
     public boolean hasNext() {
         final boolean rv;
         if (limit.get() == -1) {
@@ -170,6 +165,7 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         return rv;
     }
 
+    @Override
     public byte next() {
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot provide next byte");
@@ -179,6 +175,7 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         return origin.leasedObject().get(ValueLayout.JAVA_BYTE, nextIndex);
     }
 
+    @Override
     public void write(final byte b) {
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot write to next byte");
@@ -189,10 +186,12 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         origin.leasedObject().set(ValueLayout.JAVA_BYTE, nextIndex, b);
     }
 
+    @Override
     public long currentPosition() {
         return currentOffset.get();
     }
 
+    @Override
     public void position(final long newPosition) {
         final long segmentByteSize = leasedObject().byteSize();
         if (newPosition < 0 || newPosition > segmentByteSize) {
@@ -212,10 +211,12 @@ public final class TrackedMemorySegmentLease implements Lease<MemorySegment> {
         currentOffset.set(newPosition);
     }
 
+    @Override
     public long currentLimit() {
         return limit.get();
     }
 
+    @Override
     public void limit(final long newLimit) {
         final long segmentByteSize = leasedObject().byteSize();
         if (newLimit < -1 || newLimit > segmentByteSize) {
