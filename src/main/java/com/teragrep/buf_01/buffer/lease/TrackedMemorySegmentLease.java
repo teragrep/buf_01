@@ -48,7 +48,7 @@ package com.teragrep.buf_01.buffer.lease;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 // spotless:off
 /**
@@ -96,22 +96,24 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegment> {
 
     private final Lease<MemorySegment> origin;
-    private final AtomicLong currentOffset;
-    private final AtomicLong limit;
+    // AtomicReferenceFieldUpdater requires boxed type
+    private volatile Long currentOffset;
+    private volatile Long limit;
+
+    private static final AtomicReferenceFieldUpdater<TrackedMemorySegmentLease, Long> offsetUpdater = AtomicReferenceFieldUpdater
+            .newUpdater(TrackedMemorySegmentLease.class, Long.class, "currentOffset");
+    private static final AtomicReferenceFieldUpdater<TrackedMemorySegmentLease, Long> limitUpdater = AtomicReferenceFieldUpdater
+            .newUpdater(TrackedMemorySegmentLease.class, Long.class, "limit");
 
     public TrackedMemorySegmentLease(final Lease<MemorySegment> origin) {
-        this(origin, new AtomicLong(0L));
+        this(origin, 0L);
     }
 
-    public TrackedMemorySegmentLease(final Lease<MemorySegment> origin, final AtomicLong currentOffset) {
-        this(origin, currentOffset, new AtomicLong(-1L));
+    public TrackedMemorySegmentLease(final Lease<MemorySegment> origin, final long currentOffset) {
+        this(origin, currentOffset, -1L);
     }
 
-    public TrackedMemorySegmentLease(
-            final Lease<MemorySegment> origin,
-            final AtomicLong currentOffset,
-            final AtomicLong limit
-    ) {
+    public TrackedMemorySegmentLease(final Lease<MemorySegment> origin, final long currentOffset, final long limit) {
         this.origin = origin;
         this.currentOffset = currentOffset;
         this.limit = limit;
@@ -155,12 +157,12 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
     @Override
     public boolean hasNext() {
         final boolean rv;
-        if (limit.get() == -1) {
+        if (limit == -1) {
             // limit not set, ignore
-            rv = currentOffset.get() < origin.leasedObject().byteSize();
+            rv = currentOffset < origin.leasedObject().byteSize();
         }
         else {
-            rv = currentOffset.get() < Math.min(limit.get(), origin.leasedObject().byteSize());
+            rv = currentOffset < Math.min(limit, origin.leasedObject().byteSize());
         }
         return rv;
     }
@@ -170,7 +172,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot provide next byte");
         }
-        final long nextIndex = currentOffset.getAndIncrement();
+        final long nextIndex = offsetUpdater.getAndAccumulate(this, 1L, Long::sum);
 
         return origin.leasedObject().get(ValueLayout.JAVA_BYTE, nextIndex);
     }
@@ -181,14 +183,14 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot write to next byte");
         }
 
-        final long nextIndex = currentOffset.getAndIncrement();
+        final long nextIndex = offsetUpdater.getAndAccumulate(this, 1L, Long::sum);
 
         origin.leasedObject().set(ValueLayout.JAVA_BYTE, nextIndex, b);
     }
 
     @Override
     public long currentPosition() {
-        return currentOffset.get();
+        return currentOffset;
     }
 
     @Override
@@ -201,19 +203,19 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             );
         }
 
-        final long currentLimit = limit.get();
+        final long currentLimit = limit;
         if (newPosition > currentLimit && currentLimit != -1) {
             throw new IndexOutOfBoundsException(
-                    "New position was larger than the limit, limit=" + limit.get() + " newPosition=" + newPosition
+                    "New position was larger than the limit, limit=" + limit + " newPosition=" + newPosition
             );
         }
 
-        currentOffset.set(newPosition);
+        offsetUpdater.set(this, newPosition);
     }
 
     @Override
     public long currentLimit() {
-        return limit.get();
+        return limit;
     }
 
     @Override
@@ -226,7 +228,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             );
         }
 
-        limit.set(newLimit);
+        limitUpdater.set(this, newLimit);
 
         if (newLimit < currentPosition() && newLimit != -1) {
             position(newLimit);
