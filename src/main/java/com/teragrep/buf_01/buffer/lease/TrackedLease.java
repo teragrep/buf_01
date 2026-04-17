@@ -47,7 +47,7 @@ package com.teragrep.buf_01.buffer.lease;
 
 // spotless:off
 /**
- * @class TrackedLease
+ * @interface TrackedLease
  * @brief Provides an interface to read and write bytes from Lease with state for position and limit.
  *
  * @responsibilities
@@ -63,7 +63,8 @@ package com.teragrep.buf_01.buffer.lease;
  * - Lease
  *
  * @startuml
- * class TrackedLease {
+ * interface Lease
+ * interface TrackedLease {
  * + hasNext();
  * + next();
  * + write(b);
