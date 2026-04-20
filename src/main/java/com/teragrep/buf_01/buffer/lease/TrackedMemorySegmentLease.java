@@ -48,7 +48,6 @@ package com.teragrep.buf_01.buffer.lease;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 // spotless:off
 /**
@@ -96,14 +95,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegment> {
 
     private final Lease<MemorySegment> origin;
-    // AtomicReferenceFieldUpdater requires boxed type
-    private volatile Long currentOffset;
-    private volatile Long limit;
-
-    private static final AtomicReferenceFieldUpdater<TrackedMemorySegmentLease, Long> offsetUpdater = AtomicReferenceFieldUpdater
-            .newUpdater(TrackedMemorySegmentLease.class, Long.class, "currentOffset");
-    private static final AtomicReferenceFieldUpdater<TrackedMemorySegmentLease, Long> limitUpdater = AtomicReferenceFieldUpdater
-            .newUpdater(TrackedMemorySegmentLease.class, Long.class, "limit");
+    private long currentOffset;
+    private long limit;
 
     public TrackedMemorySegmentLease(final Lease<MemorySegment> origin) {
         this(origin, 0L);
@@ -169,25 +162,20 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
 
     @Override
     public byte next() {
-        final long currentOffsetValue = offsetUpdater.get(this);
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot provide next byte");
         }
-        offsetUpdater.compareAndSet(this, currentOffsetValue, currentOffsetValue + 1);
 
-        return origin.leasedObject().get(ValueLayout.JAVA_BYTE, currentOffsetValue);
+        return origin.leasedObject().get(ValueLayout.JAVA_BYTE, currentOffset++);
     }
 
     @Override
     public void write(final byte b) {
-        final long currentOffsetValue = offsetUpdater.get(this);
         if (!hasNext()) {
             throw new IndexOutOfBoundsException("Reached end of segment or limit, cannot write to next byte");
         }
 
-        offsetUpdater.compareAndSet(this, currentOffsetValue, currentOffsetValue + 1);
-
-        origin.leasedObject().set(ValueLayout.JAVA_BYTE, currentOffsetValue, b);
+        origin.leasedObject().set(ValueLayout.JAVA_BYTE, currentOffset++, b);
     }
 
     @Override
@@ -212,7 +200,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             );
         }
 
-        offsetUpdater.set(this, newPosition);
+        currentOffset = newPosition;
     }
 
     @Override
@@ -230,7 +218,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             );
         }
 
-        limitUpdater.set(this, newLimit);
+        limit = newLimit;
 
         if (newLimit < currentPosition() && newLimit != -1) {
             position(newLimit);
