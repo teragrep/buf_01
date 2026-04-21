@@ -1,0 +1,5 @@
+<map id="com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier" name="com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier">
+<area shape="rect" id="Node000001" title="Supplies new Arena&#45;based MemorySegment from the specified Arena." alt="" coords="371,13,633,53"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,323,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="336,30,370,30,370,35,336,35"/>
+</map>
