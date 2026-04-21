@@ -231,11 +231,11 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
             return false;
         }
         final TrackedMemorySegmentLease that = (TrackedMemorySegmentLease) o;
-        return Objects.equals(origin, that.origin);
+        return currentOffset == that.currentOffset && limit == that.limit && Objects.equals(origin, that.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin);
+        return Objects.hash(origin, currentOffset, limit);
     }
 }

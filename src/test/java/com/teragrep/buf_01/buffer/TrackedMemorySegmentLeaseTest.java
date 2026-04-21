@@ -252,6 +252,6 @@ public final class TrackedMemorySegmentLeaseTest {
 
     @Test
     void testEqualsContract() {
-        EqualsVerifier.forClass(TrackedMemorySegmentLease.class).withIgnoredFields("currentOffset", "limit").verify();
+        EqualsVerifier.simple().forClass(TrackedMemorySegmentLease.class).verify();
     }
 }
