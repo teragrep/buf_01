@@ -9,5 +9,5 @@ var searchData=
   ['openablelease_3c_20memorysegment_20_3e_6',['OpenableLease&lt; MemorySegment &gt;',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1OpenableLease.html',1,'com::teragrep::buf_01::buffer::lease']]],
   ['openingpool_7',['openingpool',['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1OpeningPool.html',1,'com.teragrep.buf_01.buffer.pool.OpeningPool'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1OpeningPool.html#aca36694124b95fce9db246daa7363930',1,'com.teragrep.buf_01.buffer.pool.OpeningPool.OpeningPool()']]],
   ['openingpool_2ejava_8',['OpeningPool.java',['../OpeningPool_8java.html',1,'']]],
-  ['origin_9',['origin',['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1OpeningPool.html#ae994e09af070baafb376041bc59c56be',1,'com::teragrep::buf_01::buffer::pool::OpeningPool']]]
+  ['origin_9',['origin',['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a4e71fd31d5258e335ae2044aef57e18d',1,'com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease.origin'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1OpeningPool.html#ae994e09af070baafb376041bc59c56be',1,'com.teragrep.buf_01.buffer.pool.OpeningPool.origin']]]
 ];
