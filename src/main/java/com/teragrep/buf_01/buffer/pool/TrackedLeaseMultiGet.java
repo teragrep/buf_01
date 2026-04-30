@@ -45,77 +45,43 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.OpenableLease;
-import com.teragrep.poj_01.pool.Pool;
+import com.teragrep.buf_01.buffer.lease.TrackedLease;
+import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
 
 import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-// spotless:off
-/**
- * @class LeaseMultiGet
- * @brief Allows returning multiple OpenableLeases for the specified amount of bytes.
- * @responsibilities
- * - Provides enough OpenableLeases to cover the requested amount of bytes
- * @collaborators
- * - MultiGet
- * - Pool
- * @startuml
- * interface MultiGet
- * interface Pool
- * class LeaseMultiGet {
- * + get(bytesCount);
- * }
- * LeaseMultiGet <|-- MultiGet : implements
- * LeaseMultiGet --> Pool : retrieves Leases from
- * note right of LeaseMultiGet
- * Responsibilities:
- * - Provides enough OpenableLeases to cover the requested amount of bytes
- * Collaborators:
- * - MultiGet
- * - Pool
- * end note
- * @enduml
- */
-// spotless:on
-public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment>> {
+public final class TrackedLeaseMultiGet implements MultiGet<TrackedLease<MemorySegment>> {
 
-    private final Pool<OpenableLease<MemorySegment>> leasePool;
+    private final MultiGet<OpenableLease<MemorySegment>> origin;
 
-    public LeaseMultiGet(final Pool<OpenableLease<MemorySegment>> leasePool) {
-        this.leasePool = leasePool;
+    public TrackedLeaseMultiGet(final MultiGet<OpenableLease<MemorySegment>> origin) {
+        this.origin = origin;
     }
 
     @Override
-    public List<OpenableLease<MemorySegment>> getAsList(final long bytesCount) {
-        // We don't know how many leases we will get in advance
-        // Need to use a list and expand if necessary
-        long currentSize = 0;
-        final List<OpenableLease<MemorySegment>> leases = new ArrayList<>();
+    public List<TrackedLease<MemorySegment>> getAsList(final long count) {
+        final List<OpenableLease<MemorySegment>> leases = origin.getAsList(count);
+        final List<TrackedLease<MemorySegment>> rv = new ArrayList<>(leases.size());
 
-        while (currentSize < bytesCount) {
-            final OpenableLease<MemorySegment> lease = leasePool.get();
-            if (lease.isStub()) {
-                throw new IllegalStateException("Pool supplied a stub lease!");
-            }
-            leases.add(lease);
-            currentSize += lease.leasedObject().byteSize();
-        }
+        leases.forEach(lease -> {
+            rv.add(new TrackedMemorySegmentLease(lease));
+        });
 
-        return leases;
+        return rv;
     }
 
     @Override
-    public OpenableLease<MemorySegment>[] getAsArray(final long bytesCount) {
-        final List<OpenableLease<MemorySegment>> leases = getAsList(bytesCount);
-        final int size = leases.size();
-        final OpenableLease<MemorySegment>[] rv = new MemorySegmentLease[size];
+    public TrackedLease<MemorySegment>[] getAsArray(final long count) {
+        final OpenableLease<MemorySegment>[] leases = origin.getAsArray(count);
+        final int len = leases.length;
+        final TrackedLease<MemorySegment>[] rv = new TrackedMemorySegmentLease[len];
 
-        for (int i = 0; i < size; i++) {
-            rv[i] = leases.get(i);
+        for (int i = 0; i < len; i++) {
+            rv[i] = new TrackedMemorySegmentLease(leases[i]);
         }
 
         return rv;
@@ -126,12 +92,12 @@ public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final LeaseMultiGet that = (LeaseMultiGet) o;
-        return Objects.equals(leasePool, that.leasePool);
+        final TrackedLeaseMultiGet that = (TrackedLeaseMultiGet) o;
+        return Objects.equals(origin, that.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(leasePool);
+        return Objects.hashCode(origin);
     }
 }

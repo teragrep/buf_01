@@ -45,9 +45,10 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
+// spotless:off
+
 import java.util.List;
 
-// spotless:off
 /**
  * @interface MultiGet
  * @brief Provides an interface for getting multiples of the given type.
@@ -72,5 +73,7 @@ import java.util.List;
 // spotless:on
 public interface MultiGet<T> {
 
-    public abstract List<T> get(long count);
+    public abstract List<T> getAsList(final long count);
+
+    public abstract T[] getAsArray(final long count);
 }
