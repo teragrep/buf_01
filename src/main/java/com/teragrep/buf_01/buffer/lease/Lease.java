@@ -110,4 +110,7 @@ public interface Lease<T> extends AutoCloseable, Stubable {
      * @return slice of the lease, registered as a sublease.
      */
     public abstract Lease<T> sliceAt(long offset);
+
+    @Override
+    public abstract void close();
 }
