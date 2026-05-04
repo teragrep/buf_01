@@ -45,6 +45,7 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.poj_01.pool.Pool;
 
@@ -89,9 +90,12 @@ public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment
     }
 
     @Override
-    public List<OpenableLease<MemorySegment>> get(final long bytesCount) {
+    public List<OpenableLease<MemorySegment>> getAsList(final long bytesCount) {
+        // We don't know how many leases we will get in advance
+        // Need to use a list and expand if necessary
         long currentSize = 0;
         final List<OpenableLease<MemorySegment>> leases = new ArrayList<>();
+
         while (currentSize < bytesCount) {
             final OpenableLease<MemorySegment> lease = leasePool.get();
             if (lease.isStub()) {
@@ -100,7 +104,21 @@ public final class LeaseMultiGet implements MultiGet<OpenableLease<MemorySegment
             leases.add(lease);
             currentSize += lease.leasedObject().byteSize();
         }
+
         return leases;
+    }
+
+    @Override
+    public OpenableLease<MemorySegment>[] getAsArray(final long bytesCount) {
+        final List<OpenableLease<MemorySegment>> leases = getAsList(bytesCount);
+        final int size = leases.size();
+        final OpenableLease<MemorySegment>[] rv = new MemorySegmentLease[size];
+
+        for (int i = 0; i < size; i++) {
+            rv[i] = leases.get(i);
+        }
+
+        return rv;
     }
 
     @Override

@@ -43,74 +43,61 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.lease;
+package com.teragrep.buf_01.buffer.pool;
 
-import com.teragrep.stb_01.Stubable;
+import com.teragrep.buf_01.buffer.lease.OpenableLease;
+import com.teragrep.buf_01.buffer.lease.TrackedLease;
+import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
 
-// spotless:off
-/**
- * @interface Lease
- * @brief Contains reference tracking and slicing functionality for the type T encapsulated object.
- * @responsibilities
- * - Reference tracking
- * - Provides access to encapsulated leased object
- * - Zero references removes access to leased object
- * @collaborators
- * - Pool
- * - MemorySegmentContainer
- * @startuml
- * interface Pool
- * interface Lease {
- * + id();
- * + refs();
- * + leasedObject();
- * + hasZeroRefs();
- * + sliceAt(offset);
- * }
- * Lease --> Pool : returned lease
- * Lease --> MemorySegmentContainer : reference tracked access
- * note right of Lease
- * Responsibilities:
- * - Reference tracking
- * - Provides access to encapsulated leased object
- * - Zero references removes access to leased object
- * Collaborators:
- * - Pool
- * - MemorySegmentContainer
- * end note
- * @enduml
- */
-// spotless:on
-public interface Lease<T> extends AutoCloseable, Stubable {
+import java.lang.foreign.MemorySegment;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-    /**
-     * @return id of the leased object
-     */
-    public abstract long id();
+public final class TrackedLeaseMultiGet implements MultiGet<TrackedLease<MemorySegment>> {
 
-    /**
-     * @return current reference count
-     */
-    public abstract long refs();
+    private final MultiGet<OpenableLease<MemorySegment>> origin;
 
-    /**
-     * @return encapsulated leased object
-     */
-    public abstract T leasedObject();
-
-    /**
-     * @return status of the lease, {@code true} indicates that the lease has expired.
-     */
-    public abstract boolean hasZeroRefs();
-
-    /**
-     * Provides a slice from the offset to the end of the segment. Registered as a sub lease.
-     * 
-     * @param offset start offset
-     * @return slice of the lease, registered as a sublease.
-     */
-    public abstract Lease<T> sliceAt(long offset);
+    public TrackedLeaseMultiGet(final MultiGet<OpenableLease<MemorySegment>> origin) {
+        this.origin = origin;
+    }
 
     @Override
-    public abstract void close();
+    public List<TrackedLease<MemorySegment>> getAsList(final long count) {
+        final List<OpenableLease<MemorySegment>> leases = origin.getAsList(count);
+        final List<TrackedLease<MemorySegment>> rv = new ArrayList<>(leases.size());
+
+        leases.forEach(lease -> {
+            rv.add(new TrackedMemorySegmentLease(lease));
+        });
+
+        return rv;
+    }
+
+    @Override
+    public TrackedLease<MemorySegment>[] getAsArray(final long count) {
+        final OpenableLease<MemorySegment>[] leases = origin.getAsArray(count);
+        final int len = leases.length;
+        final TrackedLease<MemorySegment>[] rv = new TrackedMemorySegmentLease[len];
+
+        for (int i = 0; i < len; i++) {
+            rv[i] = new TrackedMemorySegmentLease(leases[i]);
+        }
+
+        return rv;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TrackedLeaseMultiGet that = (TrackedLeaseMultiGet) o;
+        return Objects.equals(origin, that.origin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(origin);
+    }
 }

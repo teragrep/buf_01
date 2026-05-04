@@ -143,7 +143,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         origin.close();
     }
 
