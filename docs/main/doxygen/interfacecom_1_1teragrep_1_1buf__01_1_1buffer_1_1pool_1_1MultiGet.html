@@ -85,8 +85,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa21257339c33b587ef444cb91966d6ce" id="r_aa21257339c33b587ef444cb91966d6ce"><td class="memItemLeft" align="right" valign="top">abstract List&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html#aa21257339c33b587ef444cb91966d6ce">get</a> (long count)</td></tr>
-<tr class="separator:aa21257339c33b587ef444cb91966d6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904c9c2fa78541b49bcc3ecc47da9b17" id="r_a904c9c2fa78541b49bcc3ecc47da9b17"><td class="memItemLeft" align="right" valign="top">abstract List&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html#a904c9c2fa78541b49bcc3ecc47da9b17">getAsList</a> (final long count)</td></tr>
+<tr class="separator:a904c9c2fa78541b49bcc3ecc47da9b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9111debe4004162298ecacd02fbd006" id="r_ae9111debe4004162298ecacd02fbd006"><td class="memItemLeft" align="right" valign="top">abstract T[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html#ae9111debe4004162298ecacd02fbd006">getAsArray</a> (final long count)</td></tr>
+<tr class="separator:ae9111debe4004162298ecacd02fbd006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides an interface for getting multiples of the given type. </p>
@@ -100,10 +102,10 @@ Public Member Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="MultiGet_8java_source.html#l00073">73</a> of file <a class="el" href="MultiGet_8java_source.html">MultiGet.java</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MultiGet_8java_source.html#l00074">74</a> of file <a class="el" href="MultiGet_8java_source.html">MultiGet.java</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa21257339c33b587ef444cb91966d6ce" name="aa21257339c33b587ef444cb91966d6ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa21257339c33b587ef444cb91966d6ce">&#9670;&#160;</a></span>get()</h2>
+<a id="ae9111debe4004162298ecacd02fbd006" name="ae9111debe4004162298ecacd02fbd006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9111debe4004162298ecacd02fbd006">&#9670;&#160;</a></span>getAsArray()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -112,9 +114,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">abstract List&lt; T &gt; <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html">com.teragrep.buf_01.buffer.pool.MultiGet</a>&lt; T &gt;.get </td>
+          <td class="memname">abstract T[] <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html">com.teragrep.buf_01.buffer.pool.MultiGet</a>&lt; T &gt;.getAsArray </td>
           <td>(</td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype">final long&#160;</td>
           <td class="paramname"><em>count</em></td><td>)</td>
           <td></td>
         </tr>
@@ -125,6 +127,42 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet_ae9111debe4004162298ecacd02fbd006_icgraph.svg" width="535" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a904c9c2fa78541b49bcc3ecc47da9b17" name="a904c9c2fa78541b49bcc3ecc47da9b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a904c9c2fa78541b49bcc3ecc47da9b17">&#9670;&#160;</a></span>getAsList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract List&lt; T &gt; <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html">com.teragrep.buf_01.buffer.pool.MultiGet</a>&lt; T &gt;.getAsList </td>
+          <td>(</td>
+          <td class="paramtype">final long&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">abstract</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet_a904c9c2fa78541b49bcc3ecc47da9b17_icgraph.svg" width="528" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
