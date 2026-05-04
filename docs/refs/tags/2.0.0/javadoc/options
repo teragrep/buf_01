@@ -1,0 +1,24 @@
+--class-path
+'/home/runner/work/buf_01/buf_01/target/classes:/home/runner/.m2/repository/com/teragrep/poj_01/3.0.0/poj_01-3.0.0.jar:/home/runner/.m2/repository/com/teragrep/stb_01/1.0.0/stb_01-1.0.0.jar:/home/runner/.m2/repository/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.jar:/home/runner/.m2/repository/com/teragrep/stb_01/1.0.0/stb_01-1.0.0.jar:/home/runner/.m2/repository/com/teragrep/poj_01/3.0.0/poj_01-3.0.0.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'25'
+-sourcepath
+'/home/runner/work/buf_01/buf_01/src/main/java:/home/runner/work/buf_01/buf_01/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2026. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/runner/work/buf_01/buf_01/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'buf_01 0.0.1-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'buf_01 0.0.1-SNAPSHOT API'
