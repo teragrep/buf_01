@@ -43,12 +43,10 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.pool.get;
 
 import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
 import com.teragrep.buf_01.buffer.lease.OpenableLease;
-import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
-import com.teragrep.buf_01.buffer.pool.MultiGet;
 import com.teragrep.buf_01.buffer.pool.OpeningPool;
 import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
 import com.teragrep.poj_01.pool.Pool;

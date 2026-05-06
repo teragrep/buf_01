@@ -43,37 +43,17 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer.pool;
+package com.teragrep.buf_01.buffer.lease.collection;
 
-// spotless:off
+import com.teragrep.buf_01.buffer.lease.TrackedLease;
+import com.teragrep.stb_01.Stubable;
 
-import java.util.List;
+public interface TrackedLeaseCollection<T> extends Stubable, AutoCloseable {
 
-/**
- * @interface MultiGet
- * @brief Provides an interface for getting multiples of the given type.
- * @responsibilities - Provides multiple of given type for the requested count (could be byte count, for example)
- * @collaborators
- * - LeaseMultiGet
- * - Pool
- * @startuml
- * interface MultiGet {
- * + get(count);
- * }
- * MultiGet --> LeaseMultiGet : implemented by
- * note right of MultiGet
- * Responsibilities:
- * - Provides multiple of given type for the requested count (could be byte count, for example)
- * Collaborators:
- * - LeaseMultiGet
- * - Pool
- * end note
- * @enduml
- */
-// spotless:on
-public interface MultiGet<T> {
+    @Override
+    public abstract void close();
 
-    public abstract List<T> getAsList(final long count);
+    public abstract boolean hasNext();
 
-    public abstract T[] getAsArray(final long count);
+    public abstract TrackedLease<T>[] leases();
 }

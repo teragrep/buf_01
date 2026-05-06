@@ -45,59 +45,27 @@
  */
 package com.teragrep.buf_01.buffer.pool;
 
+import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
+import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
 import com.teragrep.buf_01.buffer.lease.OpenableLease;
-import com.teragrep.buf_01.buffer.lease.TrackedLease;
-import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
+import com.teragrep.poj_01.pool.Pool;
 
 import java.lang.foreign.MemorySegment;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-public final class TrackedLeaseMultiGet implements MultiGet<TrackedLease<MemorySegment>> {
+public final class PoolFake implements Pool<OpenableLease<MemorySegment>> {
 
-    private final MultiGet<OpenableLease<MemorySegment>> origin;
-
-    public TrackedLeaseMultiGet(final MultiGet<OpenableLease<MemorySegment>> origin) {
-        this.origin = origin;
+    @Override
+    public OpenableLease<MemorySegment> get() {
+        return new MemorySegmentLease(new MemorySegmentContainerImpl(0, MemorySegment.ofArray(new byte[50])), this);
     }
 
     @Override
-    public List<TrackedLease<MemorySegment>> getAsList(final long count) {
-        final List<OpenableLease<MemorySegment>> leases = origin.getAsList(count);
-        final List<TrackedLease<MemorySegment>> rv = new ArrayList<>(leases.size());
-
-        leases.forEach(lease -> {
-            rv.add(new TrackedMemorySegmentLease(lease));
-        });
-
-        return rv;
+    public void offer(final OpenableLease<MemorySegment> memorySegmentOpenableLease) {
+        // no-op
     }
 
     @Override
-    public TrackedLease<MemorySegment>[] getAsArray(final long count) {
-        final OpenableLease<MemorySegment>[] leases = origin.getAsArray(count);
-        final int len = leases.length;
-        final TrackedLease<MemorySegment>[] rv = new TrackedMemorySegmentLease[len];
-
-        for (int i = 0; i < len; i++) {
-            rv[i] = new TrackedMemorySegmentLease(leases[i]);
-        }
-
-        return rv;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final TrackedLeaseMultiGet that = (TrackedLeaseMultiGet) o;
-        return Objects.equals(origin, that.origin);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(origin);
+    public void close() {
+        // no-op
     }
 }

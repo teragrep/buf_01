@@ -43,55 +43,61 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.pool.get;
 
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub;
 import com.teragrep.buf_01.buffer.lease.OpenableLease;
 import com.teragrep.buf_01.buffer.lease.TrackedLease;
 import com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease;
-import com.teragrep.buf_01.buffer.pool.LeaseMultiGet;
-import com.teragrep.buf_01.buffer.pool.MultiGet;
-import com.teragrep.buf_01.buffer.pool.OpeningPool;
-import com.teragrep.buf_01.buffer.pool.TrackedLeaseMultiGet;
-import com.teragrep.buf_01.buffer.supply.ArenaMemorySegmentLeaseSupplier;
-import com.teragrep.poj_01.pool.Pool;
-import com.teragrep.poj_01.pool.UnboundPool;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public final class TrackedLeaseMultiGetTest {
+public final class TrackedLeaseMultiGet implements MultiGet<TrackedLease<MemorySegment>> {
 
-    @Test
-    void testDecorating() {
-        final Pool<OpenableLease<MemorySegment>> pool = new OpeningPool(
-                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
-        );
-        final MultiGet<OpenableLease<MemorySegment>> multiGet = new LeaseMultiGet(pool);
-        final MultiGet<TrackedLease<MemorySegment>> trackedMultiGet = new TrackedLeaseMultiGet(multiGet);
+    private final MultiGet<OpenableLease<MemorySegment>> origin;
 
-        final TrackedLease<MemorySegment>[] leases = trackedMultiGet.getAsArray(5);
-        final List<TrackedLease<MemorySegment>> leasesList = trackedMultiGet.getAsList(5);
-
-        Assertions.assertEquals(1, leases.length);
-        Assertions.assertEquals(5, leases[0].leasedObject().byteSize());
-        Assertions.assertEquals(TrackedMemorySegmentLease.class, leases[0].getClass());
-        Assertions.assertEquals(0L, leases[0].currentPosition());
-        Assertions.assertEquals(-1L, leases[0].currentLimit());
-
-        Assertions.assertEquals(1, leasesList.size());
-        Assertions.assertEquals(5, leasesList.getFirst().leasedObject().byteSize());
-        Assertions.assertEquals(TrackedMemorySegmentLease.class, leasesList.getFirst().getClass());
-        Assertions.assertEquals(0L, leasesList.getFirst().currentPosition());
-        Assertions.assertEquals(-1L, leasesList.getFirst().currentLimit());
+    public TrackedLeaseMultiGet(final MultiGet<OpenableLease<MemorySegment>> origin) {
+        this.origin = origin;
     }
 
-    @Test
-    void testEqualsContract() {
-        EqualsVerifier.forClass(TrackedLeaseMultiGet.class).verify();
+    @Override
+    public List<TrackedLease<MemorySegment>> getAsList(final long count) {
+        final List<OpenableLease<MemorySegment>> leases = origin.getAsList(count);
+        final List<TrackedLease<MemorySegment>> rv = new ArrayList<>(leases.size());
+
+        leases.forEach(lease -> {
+            rv.add(new TrackedMemorySegmentLease(lease));
+        });
+
+        return rv;
+    }
+
+    @Override
+    public TrackedLease<MemorySegment>[] getAsArray(final long count) {
+        final OpenableLease<MemorySegment>[] leases = origin.getAsArray(count);
+        final int len = leases.length;
+        final TrackedLease<MemorySegment>[] rv = new TrackedMemorySegmentLease[len];
+
+        for (int i = 0; i < len; i++) {
+            rv[i] = new TrackedMemorySegmentLease(leases[i]);
+        }
+
+        return rv;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TrackedLeaseMultiGet that = (TrackedLeaseMultiGet) o;
+        return Objects.equals(origin, that.origin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(origin);
     }
 }
