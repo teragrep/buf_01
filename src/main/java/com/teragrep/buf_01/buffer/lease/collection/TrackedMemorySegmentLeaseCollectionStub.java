@@ -43,29 +43,56 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.buf_01.buffer;
+package com.teragrep.buf_01.buffer.lease.collection;
 
-import com.teragrep.buf_01.buffer.container.MemorySegmentContainerImpl;
-import com.teragrep.buf_01.buffer.lease.MemorySegmentLease;
-import com.teragrep.buf_01.buffer.lease.OpenableLease;
-import com.teragrep.poj_01.pool.Pool;
+import com.teragrep.buf_01.buffer.lease.TrackedLease;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
-public final class PoolFake implements Pool<OpenableLease<MemorySegment>> {
+public final class TrackedMemorySegmentLeaseCollectionStub implements TrackedLeaseCollection<MemorySegment> {
 
-    @Override
-    public OpenableLease<MemorySegment> get() {
-        return new MemorySegmentLease(new MemorySegmentContainerImpl(0, MemorySegment.ofArray(new byte[50])), this);
+    private final boolean isStub;
+
+    public TrackedMemorySegmentLeaseCollectionStub() {
+        this(true);
     }
 
-    @Override
-    public void offer(final OpenableLease<MemorySegment> memorySegmentOpenableLease) {
-        // no-op
+    private TrackedMemorySegmentLeaseCollectionStub(final boolean isStub) {
+        this.isStub = isStub;
     }
 
     @Override
     public void close() {
-        // no-op
+        throw new UnsupportedOperationException("Stub object does not implement close()");
+    }
+
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Stub object does not implement hasNext()");
+    }
+
+    @Override
+    public TrackedLease<MemorySegment>[] leases() {
+        throw new UnsupportedOperationException("Stub object does not implement leases()");
+    }
+
+    @Override
+    public boolean isStub() {
+        return isStub;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TrackedMemorySegmentLeaseCollectionStub that = (TrackedMemorySegmentLeaseCollectionStub) o;
+        return isStub == that.isStub;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isStub);
     }
 }
