@@ -13,8 +13,8 @@ var searchData=
   ['memorysegmentleasestub_2ejava_10',['MemorySegmentLeaseStub.java',['../MemorySegmentLeaseStub_8java.html',1,'']]],
   ['memorysegmentsublease_11',['memorysegmentsublease',['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentSubLease.html#a2511fbfd3287d03abbf85d4be70bf178',1,'com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease.MemorySegmentSubLease()'],['../classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentSubLease.html',1,'com.teragrep.buf_01.buffer.lease.MemorySegmentSubLease']]],
   ['memorysegmentsublease_2ejava_12',['MemorySegmentSubLease.java',['../MemorySegmentSubLease_8java.html',1,'']]],
-  ['multiget_13',['MultiGet',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool']]],
+  ['multiget_13',['MultiGet',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1get_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool::get']]],
   ['multiget_2ejava_14',['MultiGet.java',['../MultiGet_8java.html',1,'']]],
-  ['multiget_3c_20openablelease_3c_20memorysegment_20_3e_20_3e_15',['MultiGet&lt; OpenableLease&lt; MemorySegment &gt; &gt;',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool']]],
-  ['multiget_3c_20trackedlease_3c_20memorysegment_20_3e_20_3e_16',['MultiGet&lt; TrackedLease&lt; MemorySegment &gt; &gt;',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool']]]
+  ['multiget_3c_20openablelease_3c_20memorysegment_20_3e_20_3e_15',['MultiGet&lt; OpenableLease&lt; MemorySegment &gt; &gt;',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1get_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool::get']]],
+  ['multiget_3c_20trackedlease_3c_20memorysegment_20_3e_20_3e_16',['MultiGet&lt; TrackedLease&lt; MemorySegment &gt; &gt;',['../interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1get_1_1MultiGet.html',1,'com::teragrep::buf_01::buffer::pool::get']]]
 ];

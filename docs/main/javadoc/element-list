@@ -1,5 +1,7 @@
 com.teragrep.buf_01.buffer
 com.teragrep.buf_01.buffer.container
 com.teragrep.buf_01.buffer.lease
+com.teragrep.buf_01.buffer.lease.collection
 com.teragrep.buf_01.buffer.pool
+com.teragrep.buf_01.buffer.pool.get
 com.teragrep.buf_01.buffer.supply

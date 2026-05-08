@@ -172,35 +172,6 @@ Collaborators:
 end note
 @enduml
 @startuml inline_umlgraph_9.svg
-interface MultiGet
-interface Pool
-class LeaseMultiGet {
-+ get(bytesCount);
-}
-LeaseMultiGet <|-- MultiGet : implements
-LeaseMultiGet --> Pool : retrieves Leases from
-note right of LeaseMultiGet
-Responsibilities:
-- Provides enough OpenableLeases to cover the requested amount of bytes
-Collaborators:
-- MultiGet
-- Pool
-end note
-@enduml
-@startuml inline_umlgraph_10.svg
-interface MultiGet {
-+ get(count);
-}
-MultiGet --> LeaseMultiGet : implemented by
-note right of MultiGet
-Responsibilities:
-- Provides multiple of given type for the requested count (could be byte count, for example)
-Collaborators:
-- LeaseMultiGet
-- Pool
-end note
-@enduml
-@startuml inline_umlgraph_11.svg
 interface Pool
 interface OpenableLease
 class OpeningPool {
@@ -220,6 +191,35 @@ Responsibilities:
 Collaborators:
 - Pool
 - OpenableLease
+end note
+@enduml
+@startuml inline_umlgraph_10.svg
+interface MultiGet
+interface Pool
+class LeaseMultiGet {
++ get(bytesCount);
+}
+LeaseMultiGet <|-- MultiGet : implements
+LeaseMultiGet --> Pool : retrieves Leases from
+note right of LeaseMultiGet
+Responsibilities:
+- Provides enough OpenableLeases to cover the requested amount of bytes
+Collaborators:
+- MultiGet
+- Pool
+end note
+@enduml
+@startuml inline_umlgraph_11.svg
+interface MultiGet {
++ get(count);
+}
+MultiGet --> LeaseMultiGet : implemented by
+note right of MultiGet
+Responsibilities:
+- Provides multiple of given type for the requested count (could be byte count, for example)
+Collaborators:
+- LeaseMultiGet
+- Pool
 end note
 @enduml
 @startuml inline_umlgraph_12.svg
