@@ -1,0 +1,243 @@
+@startuml inline_umlgraph_1.svg
+class MemorySegmentContainer {
++ id();
++ memorySegment();
++ isStub();
+}
+MemorySegmentContainer --> MemorySegmentLease : memorySegment
+note right of MemorySegmentContainer
+Responsibilities:
+- Contains the MemorySegment
+- Identification
+- Stubability
+Collaborators:
+- MemorySegmentLease
+end note
+@enduml
+@startuml inline_umlgraph_2.svg
+interface Pool
+interface Lease {
++ id();
++ refs();
++ leasedObject();
++ hasZeroRefs();
++ sliceAt(offset);
+}
+Lease --> Pool : returned lease
+Lease --> MemorySegmentContainer : reference tracked access
+note right of Lease
+Responsibilities:
+- Reference tracking
+- Provides access to encapsulated leased object
+- Zero references removes access to leased object
+Collaborators:
+- Pool
+- MemorySegmentContainer
+end note
+@enduml
+@startuml inline_umlgraph_3.svg
+interface Pool
+class MemorySegmentLease {
++ sliceAt(offset);
++ id();
++ refs();
++ leasedObject();
++ hasZeroRefs();
++ isStub();
++ close();
+}
+MemorySegmentLease --> MemorySegmentSubLease : slices into
+MemorySegmentLease --> Pool : returned into
+note right of MemorySegmentLease
+Responsibilities:
+- Reference tracking
+- Provides access to encapsulated MemorySegment - Zero references removes access to MemorySegment
+- Fills MemorySegment with zeroes (0) on close
+Collaborators:
+- Lease
+- Pool
+- MemorySegmentSubLease
+end note
+@enduml
+@startuml inline_umlgraph_4.svg
+class MemorySegmentSubLease {
++ sliceAt(offset);
++ id();
++ refs();
++ leasedObject();
++ hasZeroRefs();
++ isStub();
++ close();
+}
+MemorySegmentSubLease --> MemorySegmentLease : slice of
+note right of MemorySegmentSubLease
+Responsibilities:
+- Provides a sublease, which cannot be reused.
+Collaborators:
+- MemorySegmentLease
+end note
+@enduml
+@startuml inline_umlgraph_5.svg
+interface Pool
+interface OpenableLease {
++ void open();
++ id();
++ refs();
++ leasedObject();
++ hasZeroRefs();
++ sliceAt(offset);
+}
+OpenableLease --> Pool : returns to pool
+OpenableLease --> MemorySegmentLease : implementation
+note right of OpenableLease
+Responsibilities:
+- Opening lease
+Collaborators:
+- Pool
+- MemorySegmentLease
+end note
+@enduml
+@startuml inline_umlgraph_6.svg
+interface Lease
+interface TrackedLease {
++ hasNext();
++ next();
++ write(b);
++ currentPosition();
++ position(p);
++ currentLimit();
++ limit(l);
+}
+
+TrackedLease --> Lease : provides read/write functionality and position state
+
+note right of TrackedLease
+Responsibilities:
+- Retain state for position
+- Retain state for limit
+- Advance or modify position
+- Advance of modify limit
+- Provide next byte
+- Write next byte
+- Check if more bytes are available in current position
+
+Collaborators:
+- Lease
+end note
+@enduml
+@startuml inline_umlgraph_7.svg
+class TrackedMemorySegmentLease {
++ id();
++ refs();
++ leasedObject();
++ hasZeroRefs();
++ sliceAt(offset);
++ isStub();
++ close();
++ hasNext();
++ next();
++ write(byte);
++ currentPosition();
++ position(pos);
++ currentLimit();
++ limit(lim);
+}
+
+TrackedMemorySegmentLease --> MemorySegmentLease : decorates
+TrackedMemorySegmentLease --> TrackedLease : implements
+
+note right of TrackedMemorySegmentLease
+Responsibilities:
+- Decorates MemorySegmentLease, providing position, limit and iteration.
+
+Collaborators:
+- MemorySegmentLease
+end note
+@enduml
+@startuml inline_umlgraph_8.svg
+class DebugMemorySegmentLeasePool {
++ get();
++ offer(lease);
++ close();
+}
+DebugMemorySegmentLeasePool --> ArenaMemorySegmentLeaseSupplier : gets new MemorySegmentLease
+DebugMemorySegmentLeasePool --> MemorySegmentLease : provides an Opened lease, closes on offer
+note right of DebugMemorySegmentLeasePool
+Responsibilities:
+- Provide new supplier for each MemorySegment
+- Close matching supplier and MemorySegment on returning to Pool
+Collaborators:
+- ArenaMemorySegmentLeaseSupplier
+- MemorySegmentLease
+end note
+@enduml
+@startuml inline_umlgraph_9.svg
+interface Pool
+interface OpenableLease
+class OpeningPool {
++ get();
++ offer(lease);
++ close();
+}
+
+OpeningPool --> OpenableLease : opens and provides
+OpeningPool --> Pool : decorates
+
+note right of OpeningPool
+Responsibilities:
+- Opens lease on get
+- Calls decorated pool to achieve functionality
+
+Collaborators:
+- Pool
+- OpenableLease
+end note
+@enduml
+@startuml inline_umlgraph_10.svg
+interface MultiGet
+interface Pool
+class LeaseMultiGet {
++ get(bytesCount);
+}
+LeaseMultiGet <|-- MultiGet : implements
+LeaseMultiGet --> Pool : retrieves Leases from
+note right of LeaseMultiGet
+Responsibilities:
+- Provides enough OpenableLeases to cover the requested amount of bytes
+Collaborators:
+- MultiGet
+- Pool
+end note
+@enduml
+@startuml inline_umlgraph_11.svg
+interface MultiGet {
++ get(count);
+}
+MultiGet --> LeaseMultiGet : implemented by
+note right of MultiGet
+Responsibilities:
+- Provides multiple of given type for the requested count (could be byte count, for example)
+Collaborators:
+- LeaseMultiGet
+- Pool
+end note
+@enduml
+@startuml inline_umlgraph_12.svg
+class ArenaMemorySegmentLeaseSupplier {
++ apply(poolRef);
++ accept(lease);
++ close();
+}
+
+ArenaMemorySegmentLeaseSupplier --> MemorySegmentLease : provides
+
+note right of ArenaMemorySegmentLeaseSupplier
+Responsibilities:
+- Provides new MemorySegment and corresponding Lease
+- Closes Arena on close
+
+Collaborators:
+- MemorySegmentLease
+- Pool
+end note
+@enduml
