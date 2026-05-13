@@ -248,6 +248,30 @@ public final class TrackedMemorySegmentLeaseTest {
     }
 
     @Test
+    void testFlip() {
+        final OpeningPool pool = new OpeningPool(
+                new UnboundPool<>(new ArenaMemorySegmentLeaseSupplier(Arena.ofShared(), 5), new MemorySegmentLeaseStub())
+        );
+        final TrackedLease<MemorySegment> trackedLease = new TrackedMemorySegmentLease(pool.get());
+
+        // Let's read 3 bytes
+        trackedLease.next();
+        trackedLease.next();
+        trackedLease.next();
+
+        // Position should be 3, limit -1
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
+        Assertions.assertEquals(3L, trackedLease.currentPosition());
+
+        // Flip it
+        trackedLease.flip();
+
+        // Position should be 0, limit 3
+        Assertions.assertEquals(0L, trackedLease.currentPosition());
+        Assertions.assertEquals(3L, trackedLease.currentLimit());
+    }
+
+    @Test
     void testEqualsContract() {
         EqualsVerifier.simple().forClass(TrackedMemorySegmentLease.class).verify();
     }

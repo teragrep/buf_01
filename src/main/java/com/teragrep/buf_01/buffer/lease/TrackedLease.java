@@ -58,6 +58,7 @@ package com.teragrep.buf_01.buffer.lease;
  * - Provide next byte
  * - Write next byte
  * - Check if more bytes are available in current position
+ * - Flip the "buffer" aka set limit=pos and pos=0
  *
  * @collaborators
  * - Lease
@@ -72,6 +73,7 @@ package com.teragrep.buf_01.buffer.lease;
  * + position(p);
  * + currentLimit();
  * + limit(l);
+ * + flip();
  * }
  *
  * TrackedLease --> Lease : provides read/write functionality and position state
@@ -85,6 +87,7 @@ package com.teragrep.buf_01.buffer.lease;
  * - Provide next byte
  * - Write next byte
  * - Check if more bytes are available in current position
+ * - Flip the "buffer" aka set limit=pos and pos=0
  *
  * Collaborators:
  * - Lease
@@ -108,4 +111,6 @@ public interface TrackedLease<T> extends Lease<T> {
     public abstract long currentLimit();
 
     public abstract void limit(final long newLimit);
+
+    public abstract void flip();
 }

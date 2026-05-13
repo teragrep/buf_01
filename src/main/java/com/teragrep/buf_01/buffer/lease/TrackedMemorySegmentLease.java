@@ -226,6 +226,12 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
     }
 
     @Override
+    public void flip() {
+        limit(currentPosition());
+        position(0L);
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
