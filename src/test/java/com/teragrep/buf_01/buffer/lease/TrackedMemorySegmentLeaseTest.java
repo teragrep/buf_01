@@ -259,7 +259,8 @@ public final class TrackedMemorySegmentLeaseTest {
         trackedLease.next();
         trackedLease.next();
 
-        // Position should be 3
+        // Position should be 3, limit -1
+        Assertions.assertEquals(-1L, trackedLease.currentLimit());
         Assertions.assertEquals(3L, trackedLease.currentPosition());
 
         // Flip it
