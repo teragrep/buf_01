@@ -109,6 +109,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6b935d1043b7c6dd6f794debba249eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad957bb656b06fac0956e4d3078d439fb" id="r_ad957bb656b06fac0956e4d3078d439fb"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html#ad957bb656b06fac0956e4d3078d439fb">limit</a> (final long newLimit)</td></tr>
 <tr class="separator:ad957bb656b06fac0956e4d3078d439fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fe2bbe6dd8f370e6153f24fb39640f3" id="r_a9fe2bbe6dd8f370e6153f24fb39640f3"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html#a9fe2bbe6dd8f370e6153f24fb39640f3">flip</a> ()</td></tr>
+<tr class="separator:a9fe2bbe6dd8f370e6153f24fb39640f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html">com.teragrep.buf_01.buffer.lease.Lease&lt; T &gt;</a></td></tr>
 <tr class="memitem:ac93a88a0b7d536e948753d4691a8062a inherit pub_methods_interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease" id="r_ac93a88a0b7d536e948753d4691a8062a"><td class="memItemLeft" align="right" valign="top">abstract long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html#ac93a88a0b7d536e948753d4691a8062a">id</a> ()</td></tr>
 <tr class="separator:ac93a88a0b7d536e948753d4691a8062a inherit pub_methods_interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,6 +136,7 @@ Public Member Functions</h2></td></tr>
 <li>Provide next byte</li>
 <li>Write next byte</li>
 <li>Check if more bytes are available in current position</li>
+<li>Flip the "buffer" aka set limit=pos and pos=0</li>
 </ul>
 </dd></dl>
 <dl class="section user"><dt>Collaborators:</dt><dd><ul>
@@ -144,7 +147,7 @@ Public Member Functions</h2></td></tr>
 <object type="image/svg+xml" data="inline_umlgraph_6.svg"></object>
 </div>
  
-<p class="definition">Definition at line <a class="el" href="TrackedLease_8java_source.html#l00096">96</a> of file <a class="el" href="TrackedLease_8java_source.html">TrackedLease.java</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TrackedLease_8java_source.html#l00099">99</a> of file <a class="el" href="TrackedLease_8java_source.html">TrackedLease.java</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a6b935d1043b7c6dd6f794debba249eca" name="a6b935d1043b7c6dd6f794debba249eca"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b935d1043b7c6dd6f794debba249eca">&#9670;&#160;</a></span>currentLimit()</h2>
@@ -182,6 +185,31 @@ Public Member Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">abstract long <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html">com.teragrep.buf_01.buffer.lease.TrackedLease</a>&lt; T &gt;.currentPosition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">abstract</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9fe2bbe6dd8f370e6153f24fb39640f3" name="a9fe2bbe6dd8f370e6153f24fb39640f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe2bbe6dd8f370e6153f24fb39640f3">&#9670;&#160;</a></span>flip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract void <a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html">com.teragrep.buf_01.buffer.lease.TrackedLease</a>&lt; T &gt;.flip </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

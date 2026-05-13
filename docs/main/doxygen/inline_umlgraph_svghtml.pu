@@ -107,6 +107,7 @@ interface TrackedLease {
 + position(p);
 + currentLimit();
 + limit(l);
++ flip();
 }
 
 TrackedLease --> Lease : provides read/write functionality and position state
@@ -120,6 +121,7 @@ Responsibilities:
 - Provide next byte
 - Write next byte
 - Check if more bytes are available in current position
+- Flip the "buffer" aka set limit=pos and pos=0
 
 Collaborators:
 - Lease
