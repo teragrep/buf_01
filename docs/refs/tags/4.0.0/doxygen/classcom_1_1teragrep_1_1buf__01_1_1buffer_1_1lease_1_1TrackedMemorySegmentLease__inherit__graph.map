@@ -1,0 +1,5 @@
+<map id="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease" name="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease">
+<area shape="rect" id="Node000001" title="Decorates a MemorySegmentLease, providing position, limit and iteration methods." alt="" coords="10,93,251,133"/>
+<area shape="rect" id="Node000002" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html" title=" " alt="" coords="5,5,256,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,59,133,93,128,93,128,59"/>
+</map>
