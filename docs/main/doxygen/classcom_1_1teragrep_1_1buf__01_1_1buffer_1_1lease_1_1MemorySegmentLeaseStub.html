@@ -111,6 +111,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a13ca2b6c0a2b6b875392b9a9df1610fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabaa40e64f5beaf4c372839475bdec7a" id="r_aabaa40e64f5beaf4c372839475bdec7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html">Lease</a>&lt; MemorySegment &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#aabaa40e64f5beaf4c372839475bdec7a">sliceAt</a> (final long offset)</td></tr>
 <tr class="separator:aabaa40e64f5beaf4c372839475bdec7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6883781dc09c217d0c6a50533b98506" id="r_aa6883781dc09c217d0c6a50533b98506"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html">Lease</a>&lt; MemorySegment &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#aa6883781dc09c217d0c6a50533b98506">sliceWithLength</a> (final long offset, final long length)</td></tr>
+<tr class="separator:aa6883781dc09c217d0c6a50533b98506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9701e02e163a65b65499cbf26019bcf" id="r_ae9701e02e163a65b65499cbf26019bcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#ae9701e02e163a65b65499cbf26019bcf">close</a> ()</td></tr>
 <tr class="separator:ae9701e02e163a65b65499cbf26019bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5acacceca3c1d01f6f3cb77705133c7e" id="r_a5acacceca3c1d01f6f3cb77705133c7e"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a5acacceca3c1d01f6f3cb77705133c7e">equals</a> (final Object o)</td></tr>
@@ -210,10 +212,10 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00097">97</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>                        {</div>
-<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub cannot be closed!&quot;</span>);</div>
-<div class="line"><span class="lineno">   99</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00102">102</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>                        {</div>
+<div class="line"><span class="lineno">  103</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub cannot be closed!&quot;</span>);</div>
+<div class="line"><span class="lineno">  104</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -233,14 +235,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00102">102</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>                                          {</div>
-<div class="line"><span class="lineno">  103</span>        <span class="keywordflow">if</span> (o == <span class="keyword">null</span> || getClass() != o.getClass()) {</div>
-<div class="line"><span class="lineno">  104</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  105</span>        }</div>
-<div class="line"><span class="lineno">  106</span>        <span class="keyword">final</span> <a class="code hl_function" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a3ac8009b3fb1b418b11de1f6e928b0b3">MemorySegmentLeaseStub</a> that = (<a class="code hl_function" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a3ac8009b3fb1b418b11de1f6e928b0b3">MemorySegmentLeaseStub</a>) o;</div>
-<div class="line"><span class="lineno">  107</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#ad7c29285d36383684b25f75757d09364">isStub</a> == that.isStub;</div>
-<div class="line"><span class="lineno">  108</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00107">107</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  107</span>                                          {</div>
+<div class="line"><span class="lineno">  108</span>        <span class="keywordflow">if</span> (o == <span class="keyword">null</span> || getClass() != o.getClass()) {</div>
+<div class="line"><span class="lineno">  109</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  110</span>        }</div>
+<div class="line"><span class="lineno">  111</span>        <span class="keyword">final</span> <a class="code hl_function" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a3ac8009b3fb1b418b11de1f6e928b0b3">MemorySegmentLeaseStub</a> that = (<a class="code hl_function" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a3ac8009b3fb1b418b11de1f6e928b0b3">MemorySegmentLeaseStub</a>) o;</div>
+<div class="line"><span class="lineno">  112</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#ad7c29285d36383684b25f75757d09364">isStub</a> == that.isStub;</div>
+<div class="line"><span class="lineno">  113</span>    }</div>
 <div class="ttc" id="aclasscom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub_html_a3ac8009b3fb1b418b11de1f6e928b0b3"><div class="ttname"><a href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#a3ac8009b3fb1b418b11de1f6e928b0b3">com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub.MemorySegmentLeaseStub</a></div><div class="ttdeci">MemorySegmentLeaseStub()</div><div class="ttdef"><b>Definition</b> <a href="MemorySegmentLeaseStub_8java_source.html#l00058">MemorySegmentLeaseStub.java:58</a></div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -265,10 +267,10 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00111">111</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  111</span>                          {</div>
-<div class="line"><span class="lineno">  112</span>        <span class="keywordflow">return</span> Objects.hashCode(<a class="code hl_variable" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#ad7c29285d36383684b25f75757d09364">isStub</a>);</div>
-<div class="line"><span class="lineno">  113</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00116">116</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                          {</div>
+<div class="line"><span class="lineno">  117</span>        <span class="keywordflow">return</span> Objects.hashCode(<a class="code hl_variable" href="classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1MemorySegmentLeaseStub.html#ad7c29285d36383684b25f75757d09364">isStub</a>);</div>
+<div class="line"><span class="lineno">  118</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -375,10 +377,10 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00116">116</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  116</span>                       {</div>
-<div class="line"><span class="lineno">  117</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub cannot be opened!&quot;</span>);</div>
-<div class="line"><span class="lineno">  118</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00121">121</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>                       {</div>
+<div class="line"><span class="lineno">  122</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub cannot be opened!&quot;</span>);</div>
+<div class="line"><span class="lineno">  123</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -424,6 +426,39 @@ Here is the call graph for this function:</div>
 <div class="fragment"><div class="line"><span class="lineno">   92</span>                                                           {</div>
 <div class="line"><span class="lineno">   93</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub does not allow slicing!&quot;</span>);</div>
 <div class="line"><span class="lineno">   94</span>    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa6883781dc09c217d0c6a50533b98506" name="aa6883781dc09c217d0c6a50533b98506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6883781dc09c217d0c6a50533b98506">&#9670;&#160;</a></span>sliceWithLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html">Lease</a>&lt; MemorySegment &gt; com.teragrep.buf_01.buffer.lease.MemorySegmentLeaseStub.sliceWithLength </td>
+          <td>(</td>
+          <td class="paramtype">final long&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">final long&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MemorySegmentLeaseStub_8java_source.html#l00097">97</a> of file <a class="el" href="MemorySegmentLeaseStub_8java_source.html">MemorySegmentLeaseStub.java</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   97</span>                                                                                      {</div>
+<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="stringliteral">&quot;MemorySegmentLeaseStub does not allow slicing!&quot;</span>);</div>
+<div class="line"><span class="lineno">   99</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>

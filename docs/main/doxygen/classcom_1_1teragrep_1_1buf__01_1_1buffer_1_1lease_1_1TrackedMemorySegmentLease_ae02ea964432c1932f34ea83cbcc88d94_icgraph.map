@@ -1,9 +1,16 @@
 <map id="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease.currentLimit" name="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease.currentLimit">
-<area shape="rect" id="Node000001" title=" " alt="" coords="633,37,937,77"/>
-<area shape="rect" id="Node000002" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a40d6bf6b0b743c66cca14f0e655a6c08" title=" " alt="" coords="308,37,585,77"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="620,60,586,60,586,55,620,55"/>
-<area shape="rect" id="Node000003" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#af2bd0a8507750ee4fce6b1e162e9d9b0" title=" " alt="" coords="10,5,255,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="294,44,255,40,256,35,295,39"/>
-<area shape="rect" id="Node000004" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a844524847207d55bc758d3e2944ce085" title=" " alt="" coords="5,69,260,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="295,75,261,79,260,74,294,70"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="661,193,965,233"/>
+<area shape="rect" id="Node000002" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a40d6bf6b0b743c66cca14f0e655a6c08" title=" " alt="" coords="329,133,607,173"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="684,194,583,176,584,171,684,188"/>
+<area shape="rect" id="Node000005" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#aefa10758a28d1a3eb93a38d3ab250909" title=" " alt="" coords="11,197,269,237"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="647,217,270,219,270,214,647,212"/>
+<area shape="rect" id="Node000007" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a054c50edde4ab055ce28e260762a20c2" title=" " alt="" coords="323,251,613,291"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="679,238,590,253,589,248,678,233"/>
+<area shape="rect" id="Node000003" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#af2bd0a8507750ee4fce6b1e162e9d9b0" title=" " alt="" coords="17,5,263,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="419,129,352,93,274,60,236,48,237,43,276,55,354,89,422,124"/>
+<area shape="rect" id="Node000004" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a844524847207d55bc758d3e2944ce085" title=" " alt="" coords="13,69,267,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="351,133,243,112,244,107,352,128"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="352,179,244,200,243,195,351,173"/>
+<area shape="rect" id="Node000006" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a3ef1313248ce4d6af673cab4429767fe" title=" " alt="" coords="5,133,275,173"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="316,156,275,156,275,151,316,151"/>
 </map>
