@@ -46,58 +46,16 @@
 package com.teragrep.buf_01.buffer.lease.collection;
 
 import com.teragrep.buf_01.buffer.lease.TrackedLease;
+import com.teragrep.stb_01.Stubable;
 
 import java.lang.foreign.MemorySegment;
-import java.util.Arrays;
-import java.util.Objects;
 
-public final class TrackedMemorySegmentLeaseCollection implements TrackedLeaseCollection<MemorySegment> {
-
-    private final TrackedLease<MemorySegment>[] leases;
-
-    public TrackedMemorySegmentLeaseCollection(final TrackedLease<MemorySegment>[] leases) {
-        this.leases = leases;
-    }
-
-    public boolean hasNext() {
-        boolean rv = false;
-        for (final TrackedLease<MemorySegment> lease : leases) {
-            if (lease.hasNext()) {
-                rv = true;
-                break;
-            }
-        }
-
-        return rv;
-    }
+public interface TrackedMemorySegmentLeaseCollection extends Stubable, AutoCloseable {
 
     @Override
-    public TrackedLease<MemorySegment>[] leases() {
-        return leases;
-    }
+    public abstract void close();
 
-    public void close() {
-        for (final TrackedLease<MemorySegment> lease : leases) {
-            lease.close();
-        }
-    }
+    public abstract boolean hasNext();
 
-    @Override
-    public boolean isStub() {
-        return false;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final TrackedMemorySegmentLeaseCollection that = (TrackedMemorySegmentLeaseCollection) o;
-        return Objects.deepEquals(leases, that.leases);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(leases);
-    }
+    public abstract TrackedLease<MemorySegment>[] leases();
 }
