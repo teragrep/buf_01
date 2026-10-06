@@ -50,7 +50,7 @@ import com.teragrep.buf_01.buffer.lease.TrackedLease;
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
-public final class TrackedMemorySegmentLeaseCollectionStub implements TrackedLeaseCollection<MemorySegment> {
+public final class TrackedMemorySegmentLeaseCollectionStub implements TrackedMemorySegmentLeaseCollection {
 
     private final boolean isStub;
 

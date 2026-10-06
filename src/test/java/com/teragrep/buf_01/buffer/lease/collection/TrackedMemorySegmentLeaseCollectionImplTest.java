@@ -62,7 +62,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-public final class TrackedMemorySegmentLeaseCollectionTest {
+public final class TrackedMemorySegmentLeaseCollectionImplTest {
 
     @Test
     void testCollection() {
@@ -75,7 +75,7 @@ public final class TrackedMemorySegmentLeaseCollectionTest {
             final TrackedLease<MemorySegment>[] leases = multiGet.getAsArray(5);
 
             try (
-                    final TrackedLeaseCollection<MemorySegment> collection = new TrackedMemorySegmentLeaseCollection(
+                    final TrackedMemorySegmentLeaseCollection collection = new TrackedMemorySegmentLeaseCollectionImpl(
                             leases
                     )
             ) {
@@ -110,7 +110,7 @@ public final class TrackedMemorySegmentLeaseCollectionTest {
 
     @Test
     void testStubCollection() {
-        final TrackedLeaseCollection<MemorySegment> collection = new TrackedMemorySegmentLeaseCollectionStub();
+        final TrackedMemorySegmentLeaseCollection collection = new TrackedMemorySegmentLeaseCollectionStub();
         Assertions.assertTrue(collection.isStub());
         Assertions.assertThrows(UnsupportedOperationException.class, collection::hasNext);
         Assertions.assertThrows(UnsupportedOperationException.class, collection::leases);
@@ -119,7 +119,7 @@ public final class TrackedMemorySegmentLeaseCollectionTest {
 
     @Test
     void testEqualsContract() {
-        EqualsVerifier.forClass(TrackedMemorySegmentLeaseCollection.class).verify();
+        EqualsVerifier.forClass(TrackedMemorySegmentLeaseCollectionImpl.class).verify();
     }
 
     @Test
