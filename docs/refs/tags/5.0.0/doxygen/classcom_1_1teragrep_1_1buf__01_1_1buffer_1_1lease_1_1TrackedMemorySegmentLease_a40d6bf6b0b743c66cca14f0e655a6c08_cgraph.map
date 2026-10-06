@@ -1,0 +1,9 @@
+<map id="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease.position" name="com.teragrep.buf_01.buffer.lease.TrackedMemorySegmentLease.position">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,37,283,77"/>
+<area shape="rect" id="Node000002" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#ae02ea964432c1932f34ea83cbcc88d94" title=" " alt="" coords="334,5,638,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="283,42,320,38,320,44,283,47"/>
+<area shape="rect" id="Node000003" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#a4e3c99ee0f5e4d2daedf21ff0764154f" title=" " alt="" coords="331,69,641,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="283,68,317,71,317,76,283,73"/>
+<area shape="rect" id="Node000004" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html#aafa073cb18228967f4c82f84a623a94e" title=" " alt="" coords="689,69,931,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="641,87,675,87,675,92,641,92"/>
+</map>

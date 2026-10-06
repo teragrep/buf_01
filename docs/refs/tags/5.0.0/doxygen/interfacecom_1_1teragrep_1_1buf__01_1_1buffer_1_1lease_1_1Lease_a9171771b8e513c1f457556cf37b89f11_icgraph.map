@@ -1,0 +1,5 @@
+<map id="com.teragrep.buf_01.buffer.lease.Lease.sliceWithLength" name="com.teragrep.buf_01.buffer.lease.Lease.sliceWithLength">
+<area shape="rect" id="Node000001" title="Provides a slice from the given offset for the length given." alt="" coords="383,5,624,45"/>
+<area shape="rect" id="Node000002" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedMemorySegmentLease.html#ac8955ff8b63e34d31500489980795979" title=" " alt="" coords="5,5,335,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="369,28,335,28,335,23,369,23"/>
+</map>
