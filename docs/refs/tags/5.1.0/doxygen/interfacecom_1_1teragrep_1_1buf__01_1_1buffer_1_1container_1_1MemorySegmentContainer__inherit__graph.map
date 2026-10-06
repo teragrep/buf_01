@@ -1,0 +1,9 @@
+<map id="com.teragrep.buf_01.buffer.container.MemorySegmentContainer" name="com.teragrep.buf_01.buffer.container.MemorySegmentContainer">
+<area shape="rect" id="Node000001" title="Contains the MemorySegment, providing an id and stub functionality." alt="" coords="132,37,399,77"/>
+<area shape="rect" id="Node000003" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1container_1_1MemorySegmentContainerImpl.html" title="Implementation of the MemorySegmentContainer interface." alt="" coords="447,5,713,45"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="412,40,446,36,447,42,413,45"/>
+<area shape="rect" id="Node000004" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1container_1_1MemorySegmentContainerStub.html" title="Stub implementation of the MemorySegmentContainer." alt="" coords="447,69,713,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="413,70,447,73,446,78,412,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,45,84,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,55,132,55,132,60,98,60"/>
+</map>

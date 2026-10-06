@@ -1,0 +1,26 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,85,121,110"/>
+<area shape="rect" id="Node000001" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1Lease.html" title="Contains reference tracking and slicing functionality for the type T encapsulated object." alt="" coords="203,69,444,109"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="136,92,202,90,202,96,136,98"/>
+<area shape="rect" id="Node000009" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1collection_1_1TrackedMemorySegmentLeaseCollection.html" title=" " alt="" coords="169,133,477,173"/>
+<area shape="poly" id="edge4_Node000000_Node000009" title=" " alt="" coords="133,110,170,119,226,131,224,136,169,124,132,116"/>
+<area shape="rect" id="Node000002" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1OpenableLease.html" title="Lease that can be opened via the open() method provided by the Openable interface." alt="" coords="562,5,803,45"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="450,64,569,43,570,48,451,69"/>
+<area shape="rect" id="Node000004" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1TrackedLease.html" title="Provides an interface to read and write bytes from Lease with state for position and limit." alt="" coords="562,69,803,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="458,87,562,87,562,92,458,92"/>
+<area shape="rect" id="Node000010" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1collection_1_1TrackedMemorySegmentLeaseCollectionImpl.html" title=" " alt="" coords="525,133,840,173"/>
+<area shape="poly" id="edge5_Node000009_Node000010" title=" " alt="" coords="491,151,525,151,525,156,491,156"/>
+<area shape="rect" id="Node000011" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1lease_1_1collection_1_1TrackedMemorySegmentLeaseCollectionStub.html" title=" " alt="" coords="525,197,840,237"/>
+<area shape="poly" id="edge6_Node000009_Node000011" title=" " alt="" coords="451,173,570,195,569,200,450,178"/>
+<area shape="rect" id="Node000003" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1Openable.html" title=" " alt="" coords="222,5,425,45"/>
+<area shape="poly" id="edge7_Node000003_Node000002" title=" " alt="" coords="439,23,562,23,562,28,439,28"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="24,141,103,166"/>
+<area shape="poly" id="edge11_Node000005_Node000001" title=" " alt="" coords="115,134,169,119,219,107,220,112,170,124,117,139"/>
+<area shape="poly" id="edge12_Node000005_Node000009" title=" " alt="" coords="117,151,169,151,169,156,117,156"/>
+<area shape="rect" id="Node000006" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1container_1_1MemorySegmentContainer.html" title="Contains the MemorySegment, providing an id and stub functionality." alt="" coords="190,261,457,301"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="104,170,283,259,280,264,102,175"/>
+<area shape="rect" id="Node000007" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1container_1_1MemorySegmentContainerImpl.html" title="Implementation of the MemorySegmentContainer interface." alt="" coords="549,261,816,301"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="471,279,549,279,549,284,471,284"/>
+<area shape="rect" id="Node000008" href="$classcom_1_1teragrep_1_1buf__01_1_1buffer_1_1container_1_1MemorySegmentContainerStub.html" title="Stub implementation of the MemorySegmentContainer." alt="" coords="549,325,816,365"/>
+<area shape="poly" id="edge10_Node000006_Node000008" title=" " alt="" coords="451,301,570,323,569,328,450,306"/>
+</map>

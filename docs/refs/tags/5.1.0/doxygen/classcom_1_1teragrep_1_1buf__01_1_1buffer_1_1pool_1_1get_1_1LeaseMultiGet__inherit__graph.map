@@ -1,0 +1,5 @@
+<map id="com.teragrep.buf_01.buffer.pool.get.LeaseMultiGet" name="com.teragrep.buf_01.buffer.pool.get.LeaseMultiGet">
+<area shape="rect" id="Node000001" title="Allows returning multiple OpenableLeases for the specified amount of bytes." alt="" coords="51,93,310,133"/>
+<area shape="rect" id="Node000002" href="$interfacecom_1_1teragrep_1_1buf__01_1_1buffer_1_1pool_1_1get_1_1MultiGet.html" title=" " alt="" coords="5,5,356,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="183,59,183,93,178,93,178,59"/>
+</map>
