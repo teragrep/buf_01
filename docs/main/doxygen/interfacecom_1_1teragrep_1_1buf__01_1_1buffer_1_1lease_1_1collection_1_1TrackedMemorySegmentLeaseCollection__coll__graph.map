@@ -1,4 +1,4 @@
-<map id="com.teragrep.buf_01.buffer.lease.collection.TrackedLeaseCollection&lt; T &gt;" name="com.teragrep.buf_01.buffer.lease.collection.TrackedLeaseCollection&lt; T &gt;">
+<map id="com.teragrep.buf_01.buffer.lease.collection.TrackedMemorySegmentLeaseCollection" name="com.teragrep.buf_01.buffer.lease.collection.TrackedMemorySegmentLeaseCollection">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,79,313,119"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="60,5,139,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,40,147,77,143,80,114,43"/>
