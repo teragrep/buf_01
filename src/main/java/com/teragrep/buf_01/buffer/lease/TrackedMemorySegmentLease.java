@@ -150,7 +150,7 @@ public final class TrackedMemorySegmentLease implements TrackedLease<MemorySegme
     }
 
     @Override
-    public Lease<MemorySegment> sliceWithLength(final long offset, final long length) {
+    public TrackedLease<MemorySegment> sliceWithLength(final long offset, final long length) {
         return new TrackedMemorySegmentLease(origin.sliceWithLength(offset, length));
     }
 

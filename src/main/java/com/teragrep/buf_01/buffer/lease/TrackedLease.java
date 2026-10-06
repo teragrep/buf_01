@@ -124,4 +124,9 @@ public interface TrackedLease<T> extends Lease<T> {
 
     public abstract long remaining(); // limit-pos
 
+    @Override
+    public abstract TrackedLease<T> sliceAt(long offset);
+
+    @Override
+    public abstract TrackedLease<T> sliceWithLength(long offset, long length);
 }
